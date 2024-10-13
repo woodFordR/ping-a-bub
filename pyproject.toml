@@ -10,6 +10,9 @@ python = "^3.12"
 uvicorn = "^0.31.1"
 fastapi = "^0.115.2"
 pydantic-settings = "^2.5.2"
+asyncpg = "^0.29.0"
+tortoise-orm = "^0.21.6"
+aerich = "^0.7.2"
 
 
 [tool.poetry.group.dev.dependencies]
