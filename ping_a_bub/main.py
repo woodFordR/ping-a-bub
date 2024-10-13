@@ -8,7 +8,7 @@ from ping_a_bub.config import get_settings, Settings
 app = FastAPI()
 
 @app.get("/ping")
-def pong(settings: Settings = Depends(get_settings)):
+async def pong(settings: Settings = Depends(get_settings)):
     return {
         "ping": "pong!",
         "ënvironment": settings.environment,
