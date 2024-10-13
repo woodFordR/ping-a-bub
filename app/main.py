@@ -1,8 +1,8 @@
-# ping_a_bub/main.py
+# app/main.py
 
 
 from fastapi import FastAPI, Depends
-from ping_a_bub.config import get_settings, Settings
+from app.config import get_settings, Settings
 
 
 app = FastAPI()

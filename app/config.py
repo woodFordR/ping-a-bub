@@ -1,4 +1,4 @@
-# ping_a_bub/config.py
+# app/config.py
 
 import logging
 from functools import lru_cache

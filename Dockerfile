@@ -1,8 +1,9 @@
 # pull image
-FROM python:3.12.7-slim-bullseye
+FROM python:3.12.7-slim-bookworm
 
 # set dir
-WORKDIR /usr/src/ping_a_bub
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
 
 # set envs
 ENV PYTHONDONTWRITEBYTECODE 1
