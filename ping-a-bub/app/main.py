@@ -14,8 +14,8 @@ from typing import AsyncGenerator
 @asynccontextmanager
 async def lifespan_test(app: FastAPI) -> AsyncGenerator[None, None]:
     config = generate_config(
-        os.getenv("DATABASE_TEST_URL"),
-        app_modules={"models": ["models"]},
+        db_url=os.getenv("DATABASE_TEST_URL"),
+        app_modules={"models": ["app.models.quotes"]},
         testing=True,
         connection_label="models",
     )
@@ -51,6 +51,6 @@ app.include_router(router, prefix="")
 async def pong():
     return {
         "ping": "pong!",
-        "ënvironment": get_environment(),
+        "environment": get_environment(),
     }
 
