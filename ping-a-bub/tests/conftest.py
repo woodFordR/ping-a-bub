@@ -1,20 +1,14 @@
-# ping-a-bub/tests/conftest.py
-
-import os
+# tests/conftest.py
 
 import pytest
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator, Tuple
+from typing import AsyncGenerator
 from asgi_lifespan import LifespanManager
 from httpx import ASGITransport, AsyncClient
 from app.main import app
-from app.config import get_settings, Settings
 
 
 ClientManagerType = AsyncGenerator[AsyncClient, None]
-
-def get_settings_override():
-    return Settings(testing=1,database_url=os.environ.get("DATABASE_TEST_URL"),environment='test')
 
 
 @asynccontextmanager
