@@ -1,7 +1,7 @@
 from tortoise import fields, models
 
 
-class Quote(models.Model):
+class Quotes(models.Model):
     """
     The Quote model
     """
@@ -12,6 +12,9 @@ class Quote(models.Model):
     text = fields.TextField()
     created_at = fields.DatetimeField(auto_now_add=True)
 
-    def __str__(self) -> str:
-        return f"category::{self.category}, author::{self.author_name}, date::{self.created_at}"
+    def data_str(self) -> str:
+        return f"category::{self.category}, author::{self.author_name}, date::{self.created_at}".strip()
+    
+    class PydanticMeta:
+        computed = ["data_str"]
 

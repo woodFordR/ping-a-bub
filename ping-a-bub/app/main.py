@@ -5,6 +5,7 @@ import os
 from .config import get_environment, register_orm
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from .routers import router
 from tortoise import Tortoise, generate_config
 from tortoise.contrib.fastapi import RegisterTortoise
 from typing import AsyncGenerator
@@ -42,7 +43,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 
 app = FastAPI(lifespan=lifespan)
-
+app.include_router(router, prefix="")
 
 
 

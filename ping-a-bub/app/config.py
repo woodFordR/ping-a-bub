@@ -11,7 +11,7 @@ log = logging.getLogger("uvicorn")
 register_orm = partial(
     RegisterTortoise,
     db_url=os.getenv("DATABASE_URL"),
-    modules={"models": ["app.models.quote"]},
+    modules={"models": ["app.models.quotes"]},
     generate_schemas=True,
     add_exception_handlers=True,
 )

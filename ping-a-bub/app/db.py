@@ -8,7 +8,7 @@ TORTOISE_ORM = {
     "connections": {"default": os.environ.get("DATABASE_URL")},
     "apps": {
         "models": {
-            "models": ["app.models", "aerich.models"],
+            "models": ["app.models.quotes", "aerich.models"],
             "default_connection": "default",
         },
     },
