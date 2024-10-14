@@ -1,23 +1,26 @@
 # ping-a-bub/app/config.py
 
 import logging
-from functools import lru_cache
+import os
+from functools import lru_cache, partial
 
-from pydantic import AnyUrl
-from pydantic_settings import BaseSettings
-
+from tortoise.contrib.fastapi import RegisterTortoise
 
 log = logging.getLogger("uvicorn")
 
+register_orm = partial(
+    RegisterTortoise,
+    db_url=os.getenv("DATABASE_URL"),
+    modules={"models": ["app.models.quote"]},
+    generate_schemas=True,
+    add_exception_handlers=True,
+)
 
-class Settings(BaseSettings):
-    environment: str = "dev"
-    testing: bool = 0
-    database_url: AnyUrl = None
 
 
 @lru_cache()
-def get_settings() -> BaseSettings:
-    log.info("Loading config settings from the environment ...")
-    return Settings()
+def get_environment() -> str:
+    log.info("Printing env from globals ...")
+    return os.getenv("ENVIRONMENT", "dev")
+
 

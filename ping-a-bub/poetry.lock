@@ -68,6 +68,20 @@ test = ["anyio[trio]", "coverage[toml] (>=7)", "exceptiongroup (>=1.2.0)", "hypo
 trio = ["trio (>=0.26.1)"]
 
 [[package]]
+name = "asgi-lifespan"
+version = "2.1.0"
+description = "Programmatic startup/shutdown of ASGI apps."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "asgi-lifespan-2.1.0.tar.gz", hash = "sha256:5e2effaf0bfe39829cf2d64e7ecc47c7d86d676a6599f7afba378c31f5e3a308"},
+    {file = "asgi_lifespan-2.1.0-py3-none-any.whl", hash = "sha256:ed840706680e28428c01e14afb3875d7d76d3206f3d5b2f2294e059b5c23804f"},
+]
+
+[package.dependencies]
+sniffio = "*"
+
+[[package]]
 name = "asyncpg"
 version = "0.29.0"
 description = "An asyncio PostgreSQL driver"
@@ -610,4 +624,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "7cd04bc54f4d58303a50b979fcaeb05d4a4ecd11b39a531ced5b06231325b3c4"
+content-hash = "6137ef94bf32abe89c474d0fd40c722dbeaa1d7af2fc3a7ddfc37d857fb732a2"
