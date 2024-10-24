@@ -1,14 +1,16 @@
 # ping-a-bub/app/main.py
 
+import logfire
 import os
 
-from .config import get_environment, register_orm
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from .routers import router
 from tortoise import Tortoise, generate_config
 from tortoise.contrib.fastapi import RegisterTortoise
 from typing import AsyncGenerator
+
+from .config import register_orm
+from .routers import router
 
 
 @asynccontextmanager
@@ -43,14 +45,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 
 app = FastAPI(lifespan=lifespan)
+logfire.configure(
+    service_name="pingabub_main"  
+)
+logfire.instrument_fastapi(app)
+logfire.info('Hello, {name}!', name='woody')
+
 app.include_router(router, prefix="")
-
-
-
-@app.get("/ping")
-async def pong():
-    return {
-        "ping": "pong!",
-        "environment": get_environment(),
-    }
 
