@@ -9,9 +9,13 @@ from tortoise import Tortoise, generate_config
 from tortoise.contrib.fastapi import RegisterTortoise
 from typing import AsyncGenerator
 
-from .config import register_orm
-from .routers import router
+from app.config import register_orm
+from app.bub import health, quotes
 
+
+# https://github.com/testdrivenio/fastapi-tdd-docker/issues/31
+# this issue has solved the register_tortoise helper being compatible
+# with async context managers
 
 @asynccontextmanager
 async def lifespan_test(app: FastAPI) -> AsyncGenerator[None, None]:
@@ -43,13 +47,20 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             yield
         
 
+def create_application() -> FastAPI:
 
-app = FastAPI(lifespan=lifespan)
-logfire.configure(
-    service_name="pingabub_main"  
-)
-logfire.instrument_fastapi(app)
-logfire.info('Hello, {name}!', name='woody')
+    application = FastAPI(lifespan=lifespan)
+    logfire.configure(
+        service_name="app_main"
+    )
+    logfire.instrument_fastapi(application)
+    logfire.info('Hello, {name}!', name='Woody')
 
-app.include_router(router, prefix="")
+    application.include_router(health.router)
+    application.include_router(quotes.router)
+
+    return application
+
+
+app = create_application()
 

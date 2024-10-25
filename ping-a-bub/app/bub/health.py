@@ -1,21 +1,22 @@
-# app/bub/ping.py
+# app/bub/health.py
 
 import logfire
 
 from fastapi import APIRouter
 from app.config import get_environment
 
-
-router = APIRouter()
+router = APIRouter(
+    prefix="/health"
+)
 logfire.configure(
-    service_name="pingabub-health"
+    service_name="health"
 )
 
 
 @router.get("/ping")
 async def pong():
     return {
-        "ping": "bubster!",
-        "environment": get_environment
+        "ping_health": "bubs open!",
+        "environment": get_environment()
     }
 

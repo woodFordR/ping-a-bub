@@ -8,6 +8,10 @@ from tortoise.contrib.fastapi import RegisterTortoise
 
 log = logging.getLogger("uvicorn")
 
+# https://github.com/testdrivenio/fastapi-tdd-docker/issues/31
+# this issue has solved the register_tortoise helper being compatible
+# with async context managers
+
 register_orm = partial(
     RegisterTortoise,
     db_url=os.getenv("DATABASE_URL"),
@@ -15,7 +19,6 @@ register_orm = partial(
     generate_schemas=True,
     add_exception_handlers=True,
 )
-
 
 
 @lru_cache()
