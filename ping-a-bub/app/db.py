@@ -1,16 +1,10 @@
-# ping-a-bub/app/db.py
-
-
 import os
+from sqlmodel import SQLModel, create_engine
 
+postgresql_url = os.getenv("DATABASE_URL")
 
-TORTOISE_ORM = {
-    "connections": {"default": os.environ.get("DATABASE_URL")},
-    "apps": {
-        "models": {
-            "models": ["app.models.quotes", "aerich.models"],
-            "default_connection": "default",
-        },
-    },
-}
+engine = create_engine(postgresql_url)
+
+def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)
 

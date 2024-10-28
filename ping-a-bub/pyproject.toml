@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ping-a-bub"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = ["woodFordR <adam@kaewell.com>"]
 readme = "README.md"
@@ -11,16 +11,12 @@ uvicorn = "^0.31.1"
 fastapi = "^0.115.2"
 pydantic-settings = "^2.5.2"
 asyncpg = "^0.29.0"
-tortoise-orm = "^0.21.6"
-aerich = "^0.7.2"
 httpx = "^0.27.2"
 asgi-lifespan = "^2.1.0"
-logfire = {extras = ["fastapi"], version = "^1.2.0"}
-
-[tool.aerich]
-tortoise_orm = "app.db.TORTOISE_ORM"
-location = "./migrations"
-src_folder = "./."
+logfire = {extras = ["fastapi"], version = "^1.3.0"}
+sqlmodel = "^0.0.22"
+psycopg2-binary = "^2.9.10"
+alembic = "^1.13.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"

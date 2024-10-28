@@ -1,43 +1,63 @@
 import logfire
 
-from typing import List
-from fastapi import APIRouter, HTTPException
-from app.models.quotes import Quotes
-from app.schemas import Status, Quote_Pydantic, QuoteIn_Pydantic
+from app.db import engine 
+from app.models.quotes import Quote, QuoteCreate, QuotePublic
+from app.schemas import Status 
+from fastapi import APIRouter, Depends
+from sqlmodel import Session, select
+
 
 router = APIRouter(
     prefix="/quotes"
 )
-logfire.configure(
-    service_name="quotes"
-)
-
-@router.get("", response_model=List[Quote_Pydantic])
-async def get_quotes():
-    return await Quote_Pydantic.from_queryset(Quotes.all())
 
 
-@router.post("", response_model=Quote_Pydantic)
-async def create_quote(quote: QuoteIn_Pydantic):
-    quote_obj = await Quotes.create(**quote.model_dump(exclude_unset=True))
-    return await Quote_Pydantic.from_tortoise_orm(quote_obj)
+def get_session():
+    with Session(engine) as session:
+        yield session
 
 
-@router.get("/{quote_id}", response_model=Quote_Pydantic)
+@router.get("", response_model=list[QuotePublic])
+async def get_quotes(
+    *,
+    session: Session = Depends(get_session),
+):
+    quotes = session.exec(select(Quote.all()))
+    logfire.info("Admin Requesting = {name}", name="Adam K.")
+
+    return quotes
+
+
+@router.post("", response_model=QuotePublic)
+async def create_quote(
+    *,
+    session: Session = Depends(get_session),
+    quote: QuoteCreate
+):
+    quote_obj = Quote.model_validate(quote)
+    session.add(quote_obj)
+    session.commit()
+    session.refresh(quote_obj)
+    logfire.info("Quote Created ID #{quote.id}", quote=quote_obj)
+
+    return quote_obj
+
+
+@router.get("/{quote_id}", response_model=QuotePublic)
 async def get_quote(quote_id: int):
-    return await Quote_Pydantic.from_queryset_single(Quotes.get(id=quote_id))
+    return quote_id
 
 
-@router.put("/{quote_id}", response_model=Quote_Pydantic)
-async def update_quote(quote_id: int, quote: QuoteIn_Pydantic):
-    await Quotes.filter(id=quote_id).update(**quote.model_dump(exclude_unset=True))
-    return await Quote_Pydantic.from_queryset_single(Quotes.get(id=quote_id))
+@router.put("/{quote_id}", response_model=QuotePublic)
+async def update_quote(quote_id: int, quote: QuotePublic):
+    # await Quotes.filter(id=quote_id).update(**quote.model_dump(exclude_unset=True))
+    return quote_id
 
 
 @router.delete("/{quote_id}", response_model=Status)
 async def delete_quote(quote_id: int):
-    deleted_quote = await Quotes.filter(id=quote_id).delete()
-    if not deleted_quote:
-        raise HTTPException(status_code=404, detail=f"Quote #{quote_id} not found")
+    # deleted_quote = await Quotes.filter(id=quote_id).delete()
+    # if not deleted_quote:
+    #    raise HTTPException(status_code=404, detail=f"Quote #{quote_id} not found")
     return Status(message=f"Deleted quote #{quote_id}")
 

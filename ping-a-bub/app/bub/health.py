@@ -4,19 +4,21 @@ import logfire
 
 from fastapi import APIRouter
 from app.config import get_environment
+from app.schemas import HealthPublic
+
 
 router = APIRouter(
     prefix="/health"
 )
-logfire.configure(
-    service_name="health"
-)
 
 
-@router.get("/ping")
+@router.get("/ping", response_model=HealthPublic)
 async def pong():
+    env = get_environment()
+    logfire.info("The health/ping environment shows '{env}'.", env=env)
+
     return {
-        "ping_health": "bubs open!",
-        "environment": get_environment()
+        "ping_health": "bubs open, pong!",
+        "environment": env
     }
 
