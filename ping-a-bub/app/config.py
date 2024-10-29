@@ -11,7 +11,9 @@ from functools import lru_cache
 
 @lru_cache()
 def get_environment() -> str:
+    env = os.getenv("ENVIRONMENT", "development")
+
     logfire.info("Printing env from globals ...")
-    return os.getenv("ENVIRONMENT", "dev")
+    return env
 
 

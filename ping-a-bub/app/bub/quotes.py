@@ -3,7 +3,8 @@ import logfire
 from app.db import engine 
 from app.models.quotes import Quote, QuoteCreate, QuotePublic
 from app.schemas import Status 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
+
 from sqlmodel import Session, select
 
 
@@ -21,8 +22,10 @@ def get_session():
 async def get_quotes(
     *,
     session: Session = Depends(get_session),
+    offset: int = 0,
+    limit: int = Query(default=100, le=100),
 ):
-    quotes = session.exec(select(Quote.all()))
+    quotes = session.exec(select(Quote).offset(offset).limit(limit)).all()
     logfire.info("Admin Requesting = {name}", name="Adam K.")
 
     return quotes

@@ -1,13 +1,18 @@
-# ping-a-bub/app/main.py
+# app/main.py
 
 import logfire
 
 from app.bub import health, quotes
-from app.db import create_db_and_tables
+from app.db import create_db_and_tables, engine
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from logging import basicConfig, getLogger
+from sqlmodel import Session
 
+
+def get_session():
+    with Session(engine) as session:
+        yield session
 
 
 @asynccontextmanager

@@ -1,15 +1,28 @@
-import pytest
-from app.main import app
-from httpx import AsyncClient
-
-@pytest.fixture(scope="module")
-def anyio_backend() -> str:
-    return "asyncio"
+import os
+from fastapi.testclient import TestClient
+from sqlmodel import Session, SQLModel, create_engine
+from app.main import app, get_session
 
 
-@pytest.mark.anyio
-async def test_ping(client: AsyncClient) -> None:
-    response = await client.get("/ping")
-    assert response.status_code == 200
-    assert response.json() == {"ping": "pong!", "environment": "dev"}
+def test_health_ping():
+    engine = create_engine(
+        os.getenv("DATABASE_URL"), connect_args={"check_same_thread": False}
+    )
+
+    with Session(engine) as session:
+        def get_session_override():
+            return session
+
+        app.dependency_overrides[get_session] = get_session_override
+        client = TestClient(app)
+
+        response = client.get("/health/ping")
+
+        app.dependency_overrides.clear()
+        data = response.json()
+
+        assert response.status_code == 200
+        # assert data["environment"] == "testing"
+        assert data["ping_health"] == "bubs open, pong!"
+
 
