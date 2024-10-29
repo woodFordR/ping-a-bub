@@ -16,7 +16,7 @@ def test_health_ping(session: Session):
     data = response.json()
 
     assert response.status_code == 200
-    assert data["environment"] == "testing"
+    assert data["environment"] == "development"
     assert data["ping_health"] == "bubs open, pong!"
 
 

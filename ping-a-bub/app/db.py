@@ -1,7 +1,7 @@
 import os
 from sqlmodel import SQLModel, create_engine
 
-postgresql_url = os.getenv("DATABASE_URL")
+postgresql_url = os.getenv("DB_URL")
 
 engine = create_engine(postgresql_url)
 

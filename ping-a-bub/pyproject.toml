@@ -23,7 +23,7 @@ pytest = "^8.3.3"
 
 [tool.poetry.plugins.dotenv]
 ignore = "false"
-location = ".env.test"
+location = ".test.env"
 
 [build-system]
 requires = ["poetry-core"]
