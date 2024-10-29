@@ -21,11 +21,11 @@ alembic = "^1.13.3"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
 [tool.poetry.plugins.dotenv]
 ignore = "false"
 location = ".env.test"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 

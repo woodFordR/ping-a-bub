@@ -1,6 +1,5 @@
-# app/bub/health.py
-
 import logfire
+import os
 
 from fastapi import APIRouter
 from app.config import get_environment
@@ -14,7 +13,7 @@ router = APIRouter(
 
 @router.get("/ping", response_model=HealthPublic)
 async def pong():
-    env = get_environment()
+    env = os.environ["ENVIRONMENT"]
     logfire.info("The health/ping environment shows '{env}'.", env=env)
 
     return {
