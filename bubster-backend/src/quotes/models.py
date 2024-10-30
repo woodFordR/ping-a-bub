@@ -1,17 +1,23 @@
 import uuid
 from sqlmodel import Field, SQLModel
+from src.models import IdentifyModel, TimestampModel
 
 
-# Quote base model for quotes
+# quote base model
 class QuoteBase(SQLModel):
     author_name: str = Field(index=True)
     category: str = Field(default="everything")
     text: str
 
 
-# Quote model for quotes
-class Quote(QuoteBase, table=True):
-    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+# quote model
+class Quote(
+    TimestampModel,
+    QuoteBase,
+    IdentifyModel,
+    table=True
+):
+    pass
 
 
 class QuoteCreate(QuoteBase):

@@ -11,12 +11,10 @@ class Settings(BaseSettings):
         extra='ignore'
     )
     
-    testing: bool
-    environment: str
     db_url: PostgresDsn
+    debug: bool
+    environment: str
     redis_url: RedisDsn = 'redis://redis@localhost:6379/1'
-
-
-settings = Settings()
+    testing: bool
 
 

@@ -5,15 +5,15 @@ import logfire
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from logging import basicConfig, getLogger
+from src import settings
 from src.health import router as health
 from src.quotes import router as quotes
-from src.db import create_db_and_tables
 
 
 def config_routing_operation_ids(app: FastAPI) -> None:
     for route in app.routes:
         if isinstance(route, APIRoute):
-            route.operation_id = f"{route.name}--{datetime.now().strftime("%m%d%y--%H:%M")}"
+            route.operation_id = f"{route.name}-{datetime.now().strftime("%m%d%y-%H:%M")}"
 
 
 def create_application() -> FastAPI:
@@ -23,8 +23,7 @@ def create_application() -> FastAPI:
     basicConfig(handlers=[logfire.LogfireLoggingHandler()])
     log = getLogger("uvicorn")
 
-    create_db_and_tables()
-    application = FastAPI()
+    application = FastAPI(debug=settings.debug)
 
     logfire.instrument_fastapi(application)
     log.info('Hello Bubster!')

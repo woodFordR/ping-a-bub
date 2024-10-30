@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from fastapi import APIRouter
-from src.config import settings
+from src import settings
 from .models import HealthCheck
 
 

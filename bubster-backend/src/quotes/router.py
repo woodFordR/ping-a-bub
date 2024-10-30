@@ -1,9 +1,10 @@
 import logfire
 import uuid
+from fastapi import APIRouter, Depends, HTTPException
+from sqlmodel import select
+from sqlmodel.ext.asyncio.session import AsyncSession
+from src.db import get_async_session
 from src.quotes.models import Quote, QuoteCreate, QuotePublic, QuoteUpdate
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlmodel import Session, select
-from src.db import engine
 
 
 router = APIRouter(
@@ -11,36 +12,32 @@ router = APIRouter(
 )
 
 
-# space + / to comment
-def get_session():
-    with Session(engine) as session:
-        yield session
-
-
 @router.get("", response_model=list[QuotePublic])
 async def get_quotes(
     *,
-    session: Session = Depends(get_session),
-    offset: int = 0,
-    limit: int = Query(default=100, le=100),
+    session: AsyncSession = Depends(get_async_session),
 ):
-    quotes = session.exec(select(Quote).offset(offset).limit(limit)).all()
+    statement = select(Quote)
+    results = await session.exec(statement)
+    quotes = results.all()
+
     logfire.info("Admin Requesting = {name}", name="Adam K.")
 
-    return quotes
+    return quotes 
 
 
 @router.post("", response_model=QuotePublic)
 async def create_quote(
     *,
-    session: Session = Depends(get_session),
+    session: AsyncSession = Depends(get_async_session),
     quote: QuoteCreate
 ):
     quote_obj = Quote.model_validate(quote)
     session.add(quote_obj)
-    session.commit()
-    session.refresh(quote_obj)
-    logfire.info("Quote Created ID #{quote.id}", quote=quote_obj)
+
+    await session.commit()
+    await session.refresh(quote_obj)
+    logfire.info(f":::author:::{quote.author_name} :::category:::{quote.category} :::quote:::{quote.text} :::", quote=quote_obj)
 
     return quote_obj
 
@@ -48,23 +45,23 @@ async def create_quote(
 @router.get("/{quote_id}", response_model=QuotePublic)
 async def get_quote(
     *,
-    session: Session = Depends(get_session),
+    session: AsyncSession = Depends(get_async_session),
     quote_id: uuid.UUID
 ):
-    quote = session.get(Quote, quote_id)
+    quote = await session.get(Quote, quote_id)
     if not quote:
-        raise HTTPException(status_code=404, detail="Quote not found")
+        raise HTTPException(status_code=404, detail="quote not found")
     return quote
 
 
 @router.patch("/{quote_id}", response_model=QuotePublic)
 async def update_quote(
     *,
-    session: Session = Depends(get_session),
+    session: AsyncSession = Depends(get_async_session),
     quote_id: uuid.UUID,
     quote: QuoteUpdate
 ):
-    db_quote = session.get(Quote, quote_id)
+    db_quote = await session.get(Quote, quote_id)
     if not db_quote:
         raise HTTPException(status_code=404, detail="Quote not found")
 
@@ -73,8 +70,8 @@ async def update_quote(
         setattr(db_quote, k, v)
 
     session.add(db_quote)
-    session.commit()
-    session.refresh(db_quote)
+    await session.commit()
+    await session.refresh(db_quote)
 
     return db_quote
 
@@ -82,17 +79,18 @@ async def update_quote(
 @router.delete("/{quote_id}")
 async def delete_quote(
     *,
-    session: Session = Depends(get_session),
+    session: AsyncSession = Depends(get_async_session),
     quote_id: uuid.UUID
 ):
-    quote = session.get(Quote, quote_id)
+    quote = await session.get(Quote, quote_id)
     if not quote:
         raise HTTPException(status_code=404, detail="Quote not found")
 
     author = quote.author_name
 
-    session.delete(quote)
-    session.commit()
+    await session.delete(quote)
+    await session.commit()
+
     return {
         "ok": True,
         "deleted_author": author,
