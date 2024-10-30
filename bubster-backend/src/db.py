@@ -2,7 +2,7 @@ from sqlmodel import Session, SQLModel, create_engine
 from src.config import settings
 
 
-engine = create_engine(settings.db_url)
+engine = create_engine(str(settings.db_url))
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
