@@ -1,4 +1,5 @@
 import uuid
+from pydantic import BaseModel
 from sqlmodel import Field, SQLModel
 
 
@@ -23,4 +24,6 @@ class QuotePublic(QuoteBase):
     text: str
     author_name: str
 
+class Status(BaseModel):
+    message: str
 

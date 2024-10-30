@@ -1,11 +1,8 @@
 import logfire
-
-from app.db import engine 
-from app.models.quotes import Quote, QuoteCreate, QuotePublic
-from app.schemas import Status 
+from src.quotes.models import Quote, QuoteCreate, QuotePublic, Status
 from fastapi import APIRouter, Depends, Query
-
 from sqlmodel import Session, select
+from src.db import engine
 
 
 router = APIRouter(
@@ -13,6 +10,7 @@ router = APIRouter(
 )
 
 
+# space + / to comment
 def get_session():
     with Session(engine) as session:
         yield session

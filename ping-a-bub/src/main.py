@@ -1,18 +1,12 @@
-# app/main.py
+# src/main
 
 import logfire
-
-from app.bub import health, quotes
-from app.db import create_db_and_tables, engine
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from logging import basicConfig, getLogger
-from sqlmodel import Session
-
-
-def get_session():
-    with Session(engine) as session:
-        yield session
+from src.health import router as health
+from src.quotes import router as quotes
+from src.db import create_db_and_tables
 
 
 @asynccontextmanager
@@ -22,7 +16,7 @@ async def lifespan(app: FastAPI):
 
 def create_application() -> FastAPI:
     logfire.configure(
-        service_name="app_main"
+        service_name="src_main"
     )
     basicConfig(handlers=[logfire.LogfireLoggingHandler()])
     log = getLogger("uvicorn")
@@ -31,8 +25,7 @@ def create_application() -> FastAPI:
     application = FastAPI(lifespan=lifespan)
 
     logfire.instrument_fastapi(application)
-    log.info('Hello, ping-a-bub!')
-
+    log.info('Hello Bubster!')
 
     application.include_router(health.router)
     application.include_router(quotes.router)

@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 from sqlmodel import Session
-from app.main import app, get_session
+from src.main import app
+from src.db import get_session
 
 
 def test_health_ping(session: Session):
@@ -17,6 +18,6 @@ def test_health_ping(session: Session):
 
     assert response.status_code == 200
     assert data["environment"] == "development"
-    assert data["ping_health"] == "bubs open, pong!"
+    assert data["ping_health"] == "Hello Main Bubster."
 
 
