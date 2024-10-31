@@ -1,6 +1,6 @@
-# src/quotes/__init__.py
+# src/quotes/__init__
 
-from .models import Quote, QuoteCreate, QuotePublic, QuoteUpdate
+from src.quotes.models import Quote, QuoteCreate, QuotePublic, QuoteUpdate
 
 # expose classes for other mods
 __all__ = [

@@ -1,6 +1,8 @@
+# src/quotes/models
+
 import uuid
 from sqlmodel import Field, SQLModel
-from src.models import IdentifyModel, TimestampModel
+from src import IdentifyModel, TimestampModel
 
 
 # quote base model
@@ -10,7 +12,7 @@ class QuoteBase(SQLModel):
     text: str
 
 
-# quote model
+# quote model & table
 class Quote(
     TimestampModel,
     QuoteBase,

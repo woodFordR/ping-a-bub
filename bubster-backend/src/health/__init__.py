@@ -1,4 +1,7 @@
-from .schemas import HealthPublic
+# src/health/__init__
 
-__all__=["HealthPublic"]
+from src.health.models import HealthCheck
+
+__all__=["HealthCheck"]
+
 

@@ -37,11 +37,4 @@ def create_application() -> FastAPI:
 
 app = create_application()
 
-# error running sqlmodel first time 10-28-24
-# https://www.psycopg.org/articles/2018/02/08/psycopg-274-released/
-
-# from contextlib import asynccontextmanager
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-#     yield
 
