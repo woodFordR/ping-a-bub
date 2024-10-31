@@ -6,8 +6,8 @@ from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from logging import basicConfig, getLogger
 from src import settings
-from src.health import router as health
-from src.quotes import router as quotes
+import src.health.router as health
+import src.quotes.router as quotes
 
 
 def config_routing_operation_ids(app: FastAPI) -> None:

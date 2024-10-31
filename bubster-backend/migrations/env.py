@@ -3,7 +3,9 @@ from alembic import context
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from sqlalchemy.ext.asyncio import AsyncEngine
-from src.quotes import Quote
+from sqlmodel import SQLModel
+from src.quotes.models import Quote
+from src.users.models import User
 from src import settings
 
 # access to .ini file values
@@ -13,7 +15,8 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = Quote.metadata
+target_metadata = SQLModel.metadata
+
 # target_metadata.naming_convention = {
 #     "ix": "ix_%(column_0_label)s",
 #     "uq": "uq_%(table_name)s_%(column_0_name)s",

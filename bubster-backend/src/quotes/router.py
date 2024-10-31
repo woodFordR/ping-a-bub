@@ -1,10 +1,18 @@
+# src/quotes/router
+
 import logfire
-import uuid
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db import get_async_session
-from src.quotes.models import Quote, QuoteCreate, QuotePublic, QuoteUpdate
+from src.schemas import QuotePublicWithUser
+from src.quotes.models import Quote
+from src.quotes.schemas import (
+    QuoteCreate,
+    QuotePublic,
+    QuoteUpdate
+)
+from uuid import UUID
 
 
 router = APIRouter(
@@ -42,11 +50,11 @@ async def create_quote(
     return quote_obj
 
 
-@router.get("/{quote_id}", response_model=QuotePublic)
+@router.get("/{quote_id}", response_model=QuotePublicWithUser)
 async def get_quote(
     *,
     session: AsyncSession = Depends(get_async_session),
-    quote_id: uuid.UUID
+    quote_id: UUID
 ):
     quote = await session.get(Quote, quote_id)
     if not quote:
@@ -58,7 +66,7 @@ async def get_quote(
 async def update_quote(
     *,
     session: AsyncSession = Depends(get_async_session),
-    quote_id: uuid.UUID,
+    quote_id: UUID,
     quote: QuoteUpdate
 ):
     db_quote = await session.get(Quote, quote_id)
@@ -80,7 +88,7 @@ async def update_quote(
 async def delete_quote(
     *,
     session: AsyncSession = Depends(get_async_session),
-    quote_id: uuid.UUID
+    quote_id: UUID
 ):
     quote = await session.get(Quote, quote_id)
     if not quote:

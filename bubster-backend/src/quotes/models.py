@@ -1,15 +1,13 @@
 # src/quotes/models
 
-import uuid
-from sqlmodel import Field, SQLModel
+from sqlmodel import Relationship
 from src import IdentifyModel, TimestampModel
+from src.quotes.schemas import QuoteBase
+from typing import TYPE_CHECKING
 
 
-# quote base model
-class QuoteBase(SQLModel):
-    author_name: str = Field(index=True)
-    category: str = Field(default="everything")
-    text: str
+if TYPE_CHECKING:
+    from src.users.models import User
 
 
 # quote model & table
@@ -19,23 +17,7 @@ class Quote(
     IdentifyModel,
     table=True
 ):
-    pass
-
-
-class QuoteCreate(QuoteBase):
-    pass
-
-
-class QuotePublic(QuoteBase):
-    id: uuid.UUID
-
-
-class QuoteUpdate(SQLModel):
-    text: str | None = None
-    author_name: str | None = None
-
-
-class Status(SQLModel):
-    message: str
+    __tablename__ = "quotes"
+    user: "User" = Relationship(back_populates="quotes")
 
 
