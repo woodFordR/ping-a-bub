@@ -26,8 +26,7 @@ async def get_quotes(
     session: AsyncSession = Depends(get_async_session),
 ):
     statement = select(Quote)
-    results = await session.exec(statement)
-    quotes = results.all()
+    quotes = (await session.exec(statement)).all()
 
     logfire.info("Admin Requesting = {name}", name="Adam K.")
 
@@ -57,8 +56,12 @@ async def get_quote(
     quote_id: UUID
 ):
     quote = await session.get(Quote, quote_id)
+
     if not quote:
         raise HTTPException(status_code=404, detail="quote not found")
+
+    user = await quote.awaitable_attrs.user
+    logfire.info(f":::user:::{ user } :::quote:::{ quote } :::", user=user, quote=quote)
     return quote
 
 
