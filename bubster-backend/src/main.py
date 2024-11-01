@@ -8,6 +8,7 @@ from logging import basicConfig, getLogger
 from src import settings
 import src.health.router as health
 import src.quotes.router as quotes
+import src.users.router as users
 
 
 def config_routing_operation_ids(app: FastAPI) -> None:
@@ -30,6 +31,7 @@ def create_application() -> FastAPI:
 
     application.include_router(health.router)
     application.include_router(quotes.router)
+    application.include_router(users.router)
     config_routing_operation_ids(application)
 
     return application

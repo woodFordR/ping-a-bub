@@ -1,11 +1,12 @@
 # src/quotes/schemas
 
 from sqlmodel import SQLModel, Field
+from sqlalchemy.ext.asyncio import AsyncAttrs
 from uuid import UUID
 
 
 # quote base model
-class QuoteBase(SQLModel):
+class QuoteBase(AsyncAttrs, SQLModel):
     author_name: str = Field(index=True)
     category: str = Field(default="bubster")
     text: str

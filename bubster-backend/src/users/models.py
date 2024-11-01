@@ -3,7 +3,7 @@
 from sqlmodel import Relationship, Field
 from src import IdentifyModel, TimestampModel
 from src.users.schemas import UserBase
-from typing import List, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING
 
 
 if TYPE_CHECKING:
@@ -20,6 +20,8 @@ class User(
     __tablename__ = "users"
     
     hashed_password: str = Field()
-    quotes: List["Quote"] = Relationship(back_populates="user")
+    quotes: Optional[List["Quote"]] = Relationship(
+        back_populates="user"
+    )
 
 

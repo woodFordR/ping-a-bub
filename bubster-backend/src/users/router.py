@@ -8,12 +8,12 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db import get_async_session
 from src.schemas import UserPublicWithQuotes
 from src.users.models import User
+from src.quotes.models import Quote
 from src.users.schemas import(
     UserCreate,
     UserPublic,
     UserUpdate
 )
-from uuid import UUID
 
 
 router = APIRouter(
@@ -39,7 +39,7 @@ async def create_user(
 
     await session.commit()
     await session.refresh(user_obj)
-    logfire.info(f":::email:::{user.email} :::username:::{user.username} :::quotes:::{user.quotes} :::", quote=quote_obj)
+    logfire.info(f":::email:::{user.email} :::username:::{user.username} :::")
 
     return user_obj
 
@@ -58,26 +58,31 @@ async def get_users(
     return users 
 
 
-@router.get("/user_id", response_model=list[UserPublicWithQuotes])
+@router.get("/{user_id}", response_model=UserPublicWithQuotes)
 async def get_user(
     *,
-    user_id: UUID,
+    user_id: str,
     session: AsyncSession = Depends(get_async_session),
 ):
-    user = session.get(User, user_id)
+    user = await session.get(User, user_id)
 
     if not user:
         raise HTTPException(status_code=404, detail="user not found")
+
+    quotes = await user.awaitable_attrs.quotes
+    logfire.info(f":::user:::{ user } :::quotes:::{ quotes } :::", user=user, quotes=quotes)
+
+    return user
 
 
 @router.patch("/{user_id}", response_model=UserPublic)
 async def update_user(
     *,
     session: AsyncSession = Depends(get_async_session),
-    user_id: UUID,
+    user_id: str,
     user: UserUpdate
 ):
-    db_user = await session.get(User, user_id)
+    db_user = session.get(User, user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
 

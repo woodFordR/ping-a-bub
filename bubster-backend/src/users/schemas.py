@@ -2,11 +2,12 @@
 
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel 
+from sqlalchemy.ext.asyncio import AsyncAttrs
 from uuid import UUID
 
 
 # user base model
-class UserBase(SQLModel):
+class UserBase(AsyncAttrs, SQLModel):
     email: EmailStr = Field(unique=True, index=True)
     username: str
 
