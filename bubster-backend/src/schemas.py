@@ -1,7 +1,7 @@
 # src/schemas
 
-from src.quotes.schemas import QuotePublic
-from src.users.schemas import UserPublic
+from src.quotes import QuotePublic
+from src.users import UserPublic
 
 
 class QuotePublicWithUser(QuotePublic):

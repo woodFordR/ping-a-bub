@@ -2,12 +2,12 @@
 
 from sqlmodel import Relationship
 from src import IdentifyModel, TimestampModel
-from src.quotes.schemas import QuoteBase
+from .schemas import QuoteBase
 from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from src.users.models import User
+    from src.users import User
 
 
 # quote model & table

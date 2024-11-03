@@ -6,8 +6,8 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db import get_async_session
 from src.schemas import QuotePublicWithUser
-from src.quotes.models import Quote
-from src.quotes.schemas import (
+from .models import Quote
+from .schemas import (
     QuoteCreate,
     QuotePublic,
     QuoteUpdate
@@ -20,7 +20,7 @@ router = APIRouter(
 )
 
 
-@router.get("", response_model=list[QuotePublic])
+@router.get("", response_model=list[QuotePublicWithUser])
 async def get_quotes(
     *,
     session: AsyncSession = Depends(get_async_session),
@@ -29,8 +29,7 @@ async def get_quotes(
     quotes = (await session.exec(statement)).all()
 
     logfire.info("Admin Requesting = {name}", name="Adam K.")
-
-    return quotes 
+    return  quotes.awaitable_attrs.user
 
 
 @router.post("", response_model=QuotePublic)

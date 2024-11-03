@@ -7,9 +7,8 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from src.db import get_async_session
 from src.schemas import UserPublicWithQuotes
-from src.users.models import User
-from src.quotes.models import Quote
-from src.users.schemas import(
+from .models import User
+from .schemas import(
     UserCreate,
     UserPublic,
     UserUpdate
@@ -50,8 +49,7 @@ async def get_users(
     session: AsyncSession = Depends(get_async_session),
 ):
     statement = select(User)
-    results = await session.exec(statement)
-    users = results.all()
+    users = (await session.exec(statement)).all()
 
     logfire.info("requesting user list ::: {name}", name="Adam K.")
 
@@ -64,7 +62,8 @@ async def get_user(
     user_id: str,
     session: AsyncSession = Depends(get_async_session),
 ):
-    user = await session.get(User, user_id)
+    statement = select(User).where(User.id == user_id)
+    user = (await session.exec(statement)).one_or_none()
 
     if not user:
         raise HTTPException(status_code=404, detail="user not found")
