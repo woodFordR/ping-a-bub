@@ -1,14 +1,23 @@
 # global src/models
 
-import uuid as identify
+import enum
 from datetime import datetime
-from sqlalchemy import text
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, SQLModel, text
+from uuid import uuid4, UUID as uuid_id
+
+
+# category enum for quote model
+class Category(str, enum.Enum):
+    FUNNY = 'funny'
+    HAPPY = 'happy'
+    SAD = 'sad'
+    ANGRY = 'angry'
+    OTHER = 'other'
 
 
 class IdentifyModel(SQLModel):
-    id: identify.UUID = Field(
-        default_factory=identify.uuid4,
+    id: uuid_id = Field(
+        default_factory=uuid4,
         primary_key=True,
         index=True,
         sa_column_kwargs={
@@ -16,6 +25,7 @@ class IdentifyModel(SQLModel):
             "unique": True
         }
     )
+
 
 class TimestampModel(SQLModel):
     created_at: datetime = Field(

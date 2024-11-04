@@ -1,16 +1,24 @@
 # src/quotes/schemas
 
-from sqlmodel import SQLModel, Field
+import enum
+from src.models import Category
+from sqlmodel import Column, Enum, Field, SQLModel
 from sqlalchemy.ext.asyncio import AsyncAttrs
-from uuid import UUID
+from uuid import UUID as uuid_id, uuid4
 
 
 # quote base model
-class QuoteBase(AsyncAttrs, SQLModel):
+class QuoteBase(
+    AsyncAttrs,
+    SQLModel
+):
     author_name: str = Field(index=True)
-    category: str = Field(default="bubster")
+    category: Category = Field(Column(Enum(Category)))
     text: str
-    user_id: UUID | None = Field(default=None, foreign_key="users.id")
+    user_id: uuid_id = Field(
+        default_factory=uuid4,
+        foreign_key="users.id"
+    )
 
 
 class QuoteCreate(QuoteBase):
@@ -18,12 +26,12 @@ class QuoteCreate(QuoteBase):
 
 
 class QuotePublic(QuoteBase):
-    id: UUID
+    id: uuid_id
 
 
 class QuoteUpdate(SQLModel):
     text: str | None = None
     author_name: str | None = None
-    category: str | None = None
-    user_id: UUID | None = None
+    category: Category | None = None
+    user_id: uuid_id | None = None
 

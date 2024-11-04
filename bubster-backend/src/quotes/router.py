@@ -26,10 +26,13 @@ async def get_quotes(
     session: AsyncSession = Depends(get_async_session),
 ):
     statement = select(Quote)
-    quotes = (await session.exec(statement)).all()
+    quotes_obj = (await session.exec(statement)).all()
 
     logfire.info("Admin Requesting = {name}", name="Adam K.")
-    return  quotes.awaitable_attrs.user
+    for quote in quotes_obj:
+        await quote.awaitable_attrs.user
+    
+    return quotes_obj
 
 
 @router.post("", response_model=QuotePublic)
@@ -52,7 +55,7 @@ async def create_quote(
 async def get_quote(
     *,
     session: AsyncSession = Depends(get_async_session),
-    quote_id: UUID
+    quote_id: str
 ):
     quote = await session.get(Quote, quote_id)
 
@@ -68,10 +71,11 @@ async def get_quote(
 async def update_quote(
     *,
     session: AsyncSession = Depends(get_async_session),
-    quote_id: UUID,
+    quote_id: str,
     quote: QuoteUpdate
 ):
-    db_quote = await session.get(Quote, quote_id)
+    statement = select(Quote).where(Quote.id == quote_id)
+    db_quote = (await session.exec(statement)).one_or_none()
     if not db_quote:
         raise HTTPException(status_code=404, detail="Quote not found")
 
@@ -90,9 +94,10 @@ async def update_quote(
 async def delete_quote(
     *,
     session: AsyncSession = Depends(get_async_session),
-    quote_id: UUID
+    quote_id: str
 ):
-    quote = await session.get(Quote, quote_id)
+    statement = select(Quote).where(Quote.id == quote_id)
+    quote = (await session.exec(statement)).one_or_none()
     if not quote:
         raise HTTPException(status_code=404, detail="Quote not found")
 

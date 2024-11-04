@@ -95,4 +95,26 @@ async def update_user(
 
     return db_user
 
+@router.delete("/{user_id}")
+async def delete_user(
+    *,
+    session: AsyncSession = Depends(get_async_session),
+    user_id: str
+):
+    statement = select(User).where(User.id == user_id)
+    user = (await session.exec(statement)).one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="this user has not been found." )
+    
+    user_name = user.name
+
+    await session.delete(user)
+    await session.commit()
+
+    return {
+        "ok": True,
+        "deleted_user": user_name,
+        "deleted_id": user_id
+    }
+
 
