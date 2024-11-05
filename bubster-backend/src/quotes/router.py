@@ -46,7 +46,7 @@ async def create_quote(
 
     await session.commit()
     await session.refresh(quote_obj)
-    logfire.info(f":::author:::{quote.author_name} :::category:::{quote.category} :::quote:::{quote.text} :::", quote=quote_obj)
+    logfire.info(f":::author - quote:::{quote.author_name} - {quote.text} :::to-do:::", quote=quote_obj)
 
     return quote_obj
 

@@ -1,26 +1,26 @@
 services:
-  web:
-    build: ./ping-a-bub 
-    command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
+  bubster:
+    build: ./bubster-backend
+    command: uvicorn src.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
     volumes:
-      - ./ping-a-bub:/usr/src/app
+      - ./bubster-backend:/home/app/bubster-backend
     ports:
       - 8004:8000
     environment:
       - ENVIRONMENT=dev
       - TESTING=0
-      - DATABASE_URL=postgres://postgres:postgres@web-db:5432/web_dev
-      - DATABASE_TEST_URL=postgres://postgres:postgres@web-db:5432/web_test
+      - DATABASE_URL=postgres://docker_woody:docker_woody@bubster-db:5432/bubster_dev
+    env_file: "./bubster-backend/.test.env"
     depends_on:
-      - web-db
+      - bubster-db
 
-  web-db:
+  bubster-db:
     build:
-      context: ./ping-a-bub/db
+      context: ./bubster-backend/db
       dockerfile: Dockerfile
     expose: 
       - 5432
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=docker_woody
+      - POSTGRES_PASSWORD=docker_woody
 

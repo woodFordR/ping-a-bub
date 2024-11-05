@@ -9,10 +9,6 @@ from src import settings
 import src.health.router as health
 import src.quotes.router as quotes
 import src.users.router as users
-from sqlmodel import main as _sqlmodel_main
-
-
-_sqlmodel_main.sa_Enum = lambda _: _sqlmodel_main.AutoString
 
 
 def config_routing_operation_ids(app: FastAPI) -> None:
@@ -23,7 +19,7 @@ def config_routing_operation_ids(app: FastAPI) -> None:
 
 def create_application() -> FastAPI:
     logfire.configure(
-        service_name="src_main"
+        service_name="bubster_{settings.environment}"
     )
     basicConfig(handlers=[logfire.LogfireLoggingHandler()])
     log = getLogger("uvicorn")
