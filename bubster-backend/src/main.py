@@ -19,7 +19,7 @@ def config_routing_operation_ids(app: FastAPI) -> None:
 
 def create_application() -> FastAPI:
     logfire.configure(
-        service_name="bubster_{settings.environment}"
+        service_name=f"bubster_main_{settings.environment}"
     )
     basicConfig(handlers=[logfire.LogfireLoggingHandler()])
     log = getLogger("uvicorn")

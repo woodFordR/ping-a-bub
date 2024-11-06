@@ -1,23 +1,20 @@
-from fastapi.testclient import TestClient
-from sqlmodel import Session
+import pytest
+import trio
+from httpx import ASGITransport, AsyncClient
 from src.main import app
-from src.db import get_session
 
 
-def test_health_ping(session: Session):
-    def get_session_override():
-        return session
-
-    app.dependency_overrides[get_session] = get_session_override
-    client = TestClient(app)
-
-    response = client.get("/health/ping")
-
-    app.dependency_overrides.clear()
-    data = response.json()
+@pytest.mark.anyio
+async def test_health_ping():
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
+        response = await ac.get(
+            "/health/ping",
+        )
 
     assert response.status_code == 200
-    assert data["environment"] == "development"
-    assert data["ping_health"] == "Hello Main Bubster."
-
+    ping = response.json()
+    assert ping["ping_health"] == "Hello Main Bubster." 
+    assert ping["environment"] == "development"
 

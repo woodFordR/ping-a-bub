@@ -12,7 +12,6 @@ from .schemas import (
     QuotePublic,
     QuoteUpdate
 )
-from uuid import UUID
 
 
 router = APIRouter(
@@ -46,7 +45,7 @@ async def create_quote(
 
     await session.commit()
     await session.refresh(quote_obj)
-    logfire.info(f":::author - quote:::{quote.author_name} - {quote.text} :::to-do:::", quote=quote_obj)
+    logfire.info(f":::quote author::: {quote_obj.author_name} - {quote_obj.text} :::to-do:::")
 
     return quote_obj
 

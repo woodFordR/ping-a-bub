@@ -1,15 +1,16 @@
 import os
 import pytest
-from sqlmodel import Session, SQLModel, create_engine
+import trio
+from httpx import ASGITransport, AsyncClient
+from typing import AsyncGenerator
+from src.main import app
 
 
-@pytest.fixture(name="session")
-def session_fixture():
-    engine = create_engine(
-        os.environ["DB_URL"]
-    )
-    SQLModel.metadata.create_all(engine)
-    with Session(engine) as session:
-        yield session
+@pytest.fixture
+async def client() -> AsyncGenerator[AsyncClient, None]:
+    host, port = "127.0.0.1", "9000"
+
+    async with AsyncClient(transport=ASGITransport(app=app, client=(host, port)), base_url="http://test") as client:
+        yield client
 
 
