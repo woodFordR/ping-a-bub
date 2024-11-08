@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "bubster-backend",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

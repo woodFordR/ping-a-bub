@@ -1,0 +1,18 @@
+meta {
+  name: update a quote
+  type: http
+  seq: 4
+}
+
+patch {
+  url: http://localhost:8000/quotes/40d43537-ac66-4170-96df-d4d383436273
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "author_name": "dada & some squish and mostly mama",
+    "text": "its raining cats & dogs!"
+  }
+}
