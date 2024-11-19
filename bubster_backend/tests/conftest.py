@@ -1,9 +1,7 @@
-import os
 import pytest
-import trio
 from httpx import ASGITransport, AsyncClient
 from typing import AsyncGenerator
-from src.main import app
+from bubster_backend.main import app
 
 
 @pytest.fixture

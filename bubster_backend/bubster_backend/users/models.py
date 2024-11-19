@@ -1,7 +1,7 @@
 # src/users/models
 
 from sqlmodel import Relationship, Field
-from src import IdentifyModel, TimestampModel
+from bubster_backend import IdentifyModel, TimestampModel
 from .schemas import UserBase
 from typing import List, Optional, TYPE_CHECKING
 

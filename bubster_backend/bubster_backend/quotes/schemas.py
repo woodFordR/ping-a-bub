@@ -1,7 +1,6 @@
-# src/quotes/schemas
+# bubster_backend/quotes/schemas
 
-import enum
-from src.models import Category
+from bubster_backend.models import Category
 from sqlmodel import Column, Enum, Field, SQLModel
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from uuid import UUID as uuid_id, uuid4

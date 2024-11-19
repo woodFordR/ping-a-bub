@@ -1,7 +1,6 @@
 import pytest
-import trio
 from httpx import ASGITransport, AsyncClient
-from src.main import app
+from bubster_backend.main import app
 
 
 @pytest.mark.anyio

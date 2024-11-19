@@ -1,13 +1,13 @@
-# src/quotes/models
+# bubster_backend/quotes/models
 
 from sqlmodel import Relationship
-from src import IdentifyModel, TimestampModel
+from bubster_backend import IdentifyModel, TimestampModel
 from .schemas import QuoteBase
 from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from src.users import User
+    from bubster_backend.users import User
 
 
 # quote model & table

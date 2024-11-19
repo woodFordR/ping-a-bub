@@ -1,22 +1,22 @@
 services:
   bubster:
-    build: ./bubster-backend
+    build: ./bubster_backend
     command: uvicorn src.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
     volumes:
-      - ./bubster-backend:/home/app/bubster-backend
+      - ./bubster_backend:/home/app/bubster_backend
     ports:
       - 8004:8000
     environment:
       - ENVIRONMENT=dev
       - TESTING=0
       - DATABASE_URL=postgres://docker_woody:docker_woody@bubster-db:5432/bubster_dev
-    env_file: "./bubster-backend/.test.env"
+    env_file: "./bubster_backend/.test.env"
     depends_on:
       - bubster-db
 
   bubster-db:
     build:
-      context: ./bubster-backend/db
+      context: ./bubster_backend/db
       dockerfile: Dockerfile
     expose: 
       - 5432

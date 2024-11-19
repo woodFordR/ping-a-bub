@@ -1,4 +1,4 @@
-# global src/models
+# global bubster_backend/models
 
 import enum
 from datetime import datetime

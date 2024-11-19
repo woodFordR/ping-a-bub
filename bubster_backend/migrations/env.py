@@ -4,9 +4,9 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlmodel import SQLModel
-from src.quotes.models import Quote
-from src.users.models import User
-from src import settings
+from bubster_backend.quotes.models import Quote
+from bubster_backend.users.models import User
+from bubster_backend import settings
 
 # access to .ini file values
 config = context.config

@@ -1,9 +1,9 @@
-# src/db
+# bubster_backend/db
 
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlmodel.ext.asyncio.session import AsyncSession
-from src import settings
+from bubster_backend import settings
 
 
 async_engine = create_async_engine(

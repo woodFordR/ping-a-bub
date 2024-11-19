@@ -1,21 +1,18 @@
 # pull image
-FROM python:3.12.7-slim-bookworm
+FROM python:3.13.0-slim-bookworm
 
 # set dir for app 
 RUN mkdir -p /home/app
 RUN addgroup --system bubster && adduser --system --group bubster
 
 ENV HOME=/home/app
-ENV APP_HOME=/home/app/bubster-backend
+ENV APP_HOME=/home/app/bubster_backend
 RUN mkdir ${APP_HOME}
 WORKDIR ${APP_HOME}
 
 # set envs
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-ENV ENVIRONMENT dev
-ENV TESTING 0
-ENV PORT 8000
 
 # system deps.
 RUN apt-get update \
@@ -34,13 +31,15 @@ RUN pip install -r requirements.txt
 # copy app files
 COPY . .
 
-# add env
+# add entry
+COPY ./entrypoint.sh .
+# RUN chmod +x /home/app/bubster-backend/entrypoint.sh
 COPY ./.test.env .env
 RUN chown -R bubster:bubster ${APP_HOME}
 
 # change user
 USER bubster
 
-# running the gunicorn on heroku
-CMD ["gunicorn --bind 0.0.0.0:${PORT} src.main:app -k uvicorn.workers.UvicornWorker"]
+# initiate entry
+ENTRYPOINT ["/home/app/bubster_backend/entrypoint.sh"]
 

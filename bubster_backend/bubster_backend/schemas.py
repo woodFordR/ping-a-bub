@@ -1,7 +1,7 @@
-# src/schemas
+# bubster_backend/schemas
 
-from src.quotes.schemas import QuotePublic
-from src.users.schemas import UserPublic
+from bubster_backend.quotes.schemas import QuotePublic
+from bubster_backend.users.schemas import UserPublic
 
 
 class QuotePublicWithUser(QuotePublic):

@@ -1,14 +1,14 @@
-# src/main
+# bubster_backend/main
 
 from datetime import datetime
 import logfire
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from logging import basicConfig, getLogger
-from src import settings
-import src.health.router as health
-import src.quotes.router as quotes
-import src.users.router as users
+from bubster_backend import settings
+import bubster_backend.health.router as health
+import bubster_backend.quotes.router as quotes
+import bubster_backend.users.router as users
 
 
 def config_routing_operation_ids(app: FastAPI) -> None:
@@ -19,7 +19,7 @@ def config_routing_operation_ids(app: FastAPI) -> None:
 
 def create_application() -> FastAPI:
     logfire.configure(
-        service_name=f"bubster_main_{settings.environment}"
+        service_name=f"bubster_backend_{settings.environment}"
     )
     basicConfig(handlers=[logfire.LogfireLoggingHandler()])
     log = getLogger("uvicorn")

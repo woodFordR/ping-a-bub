@@ -1,4 +1,4 @@
-# src/health/models
+# bubster_backend/health/models
 
 from pydantic.dataclasses import dataclass
 

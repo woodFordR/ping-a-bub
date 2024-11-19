@@ -1,8 +1,8 @@
-# src/health/router
+# bubster_backend/health/router
 
 from datetime import datetime
 from fastapi import APIRouter
-from src import settings
+from bubster_backend import settings
 from .models import HealthCheck
 
 

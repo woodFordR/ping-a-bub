@@ -1,3 +1,5 @@
+# bubster_backend/health/schemas
+
 from sqlmodel import SQLModel
 
 

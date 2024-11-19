@@ -5,8 +5,8 @@ from argon2 import PasswordHasher
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
-from src.db import get_async_session
-from src.schemas import UserPublicWithQuotes
+from bubster_backend.db import get_async_session
+from bubster_backend.schemas import UserPublicWithQuotes
 from .models import User
 from .schemas import(
     UserCreate,
