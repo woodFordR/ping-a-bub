@@ -19,6 +19,9 @@ router = APIRouter(
     prefix="/users"
 )
 
+logfire.configure()
+logfire.instrument_asyncpg()
+
 
 def get_hash_response(pswd: str) -> str:
     ph = PasswordHasher()
@@ -31,14 +34,15 @@ async def create_user(
     session: AsyncSession = Depends(get_async_session),
     user: UserCreate
 ):
-    hashed_pwd = get_hash_response(user.password)
-    pwd_data = {"hashed_password": hashed_pwd}
-    user_obj = User.model_validate(user, update=pwd_data)
-    session.add(user_obj)
+    with logfire.span("creating a user ..."):
+        hashed_pwd = get_hash_response(user.password)
+        pwd_data = {"hashed_password": hashed_pwd}
+        user_obj = User.model_validate(user, update=pwd_data)
+        session.add(user_obj)
 
-    await session.commit()
-    await session.refresh(user_obj)
-    logfire.info(f":::email:::{user.email} :::username:::{user.username} :::")
+        await session.commit()
+        await session.refresh(user_obj)
+        logfire.info("user {username=} created with {email=}", username=user.username, email=user.email)
 
     return user_obj
 
@@ -48,10 +52,9 @@ async def get_users(
     *,
     session: AsyncSession = Depends(get_async_session),
 ):
-    statement = select(User)
-    users = (await session.exec(statement)).all()
-
-    logfire.info("requesting user list ::: {name}", name="Adam K.")
+    with logfire.span("querying all users ..."):
+        statement = select(User)
+        users = (await session.exec(statement)).all()
 
     return users 
 
@@ -62,19 +65,16 @@ async def get_user(
     user_id: str,
     session: AsyncSession = Depends(get_async_session),
 ):
-    statement = select(User).where(User.id == user_id)
-    user = (await session.exec(statement)).one_or_none()
+    with logfire.span("getting a user ..."):
+        statement = select(User).where(User.id == user_id)
+        user = (await session.exec(statement)).one_or_none()
 
-    if not user:
-        raise HTTPException(status_code=404, detail="user not found")
-
-    with logfire.span("grabbing user with {id=}:", id=user_id):
+        if not user:
+            raise HTTPException(status_code=404, detail="user not found")
         logfire.info(f"{user.email} {user.username}")
 
-    quotes = await user.awaitable_attrs.quotes
-
-    with logfire.span("grabbing user {username=}'s quotes:", username=user.username):
-        logfire.info("{quotes}", quotes=quotes)
+        quote_count = len(await user.awaitable_attrs.quotes)
+        logfire.info(f"user: {user.email} as {user.username};; quotes_count: {quote_count}")
 
     return user
 
@@ -86,17 +86,20 @@ async def update_user(
     user_id: str,
     user: UserUpdate
 ):
-    db_user = session.get(User, user_id)
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
+    with logfire.span("updating a user ..."):
+        statement = select(User).where(User.id == user_id)
+        db_user = (await session.exec(statement)).one_or_none()
+        if not db_user:
+            raise HTTPException(status_code=404, detail="User not found")
 
-    user_data = user.model_dump(exclude_unset=True)
-    for k, v in user_data.items():
-        setattr(db_user, k, v)
+        user_data = user.model_dump(exclude_unset=True)
+        for k, v in user_data.items():
+            setattr(db_user, k, v)
+            logfire.info("updated {key=} to {value=}", key=k, value=v)
 
-    session.add(db_user)
-    await session.commit()
-    await session.refresh(db_user)
+        session.add(db_user)
+        await session.commit()
+        await session.refresh(db_user)
 
     return db_user
 
@@ -106,15 +109,17 @@ async def delete_user(
     session: AsyncSession = Depends(get_async_session),
     user_id: str
 ):
-    statement = select(User).where(User.id == user_id)
-    user = (await session.exec(statement)).one_or_none()
-    if not user:
-        raise HTTPException(status_code=404, detail="this user has not been found." )
-    
-    user_name = user.name
+    with logfire.span("deleting a user ..."):
+        statement = select(User).where(User.id == user_id)
+        user = (await session.exec(statement)).one_or_none()
+        if not user:
+            raise HTTPException(status_code=404, detail="this user has not been found." )
+        
+        user_name = user.username
 
-    await session.delete(user)
-    await session.commit()
+        await session.delete(user)
+        await session.commit()
+        logfire.info(f"deleted {user_name} with id# {user_id}")
 
     return {
         "ok": True,
