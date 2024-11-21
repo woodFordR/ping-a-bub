@@ -68,8 +68,13 @@ async def get_user(
     if not user:
         raise HTTPException(status_code=404, detail="user not found")
 
+    with logfire.span("grabbing user with {id=}:", id=user_id):
+        logfire.info(f"{user.email} {user.username}")
+
     quotes = await user.awaitable_attrs.quotes
-    logfire.info(f":::user:::{ user } :::quotes:::{ quotes } :::", user=user, quotes=quotes)
+
+    with logfire.span("grabbing user {username=}'s quotes:", username=user.username):
+        logfire.info("{quotes}", quotes=quotes)
 
     return user
 

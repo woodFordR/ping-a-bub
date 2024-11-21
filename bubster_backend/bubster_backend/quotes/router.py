@@ -18,18 +18,21 @@ router = APIRouter(
     prefix="/quotes"
 )
 
+logfire.configure()
+logfire.instrument_asyncpg()
+
 
 @router.get("", response_model=list[QuotePublicWithUser])
 async def get_quotes(
     *,
     session: AsyncSession = Depends(get_async_session),
 ):
-    statement = select(Quote)
-    quotes_obj = (await session.exec(statement)).all()
+    with logfire.span("query for quotes from db ..."):
+        statement = select(Quote)
+        quotes_obj = (await session.exec(statement)).all()
 
-    logfire.info("Admin Requesting = {name}", name="Adam K.")
-    for quote in quotes_obj:
-        await quote.awaitable_attrs.user
+        for quote in quotes_obj:
+            await quote.awaitable_attrs.user
     
     return quotes_obj
 
@@ -40,12 +43,13 @@ async def create_quote(
     session: AsyncSession = Depends(get_async_session),
     quote: QuoteCreate
 ):
-    quote_obj = Quote.model_validate(quote)
-    session.add(quote_obj)
+    with logfire.span("creating a quote ..."):
+        quote_obj = Quote.model_validate(quote)
+        session.add(quote_obj)
 
-    await session.commit()
-    await session.refresh(quote_obj)
-    logfire.info(f":::quote author::: {quote_obj.author_name} - {quote_obj.text} :::to-do:::")
+        await session.commit()
+        await session.refresh(quote_obj)
+        logfire.info("quote created id# {id=}", id=quote_obj.id)
 
     return quote_obj
 
@@ -56,13 +60,14 @@ async def get_quote(
     session: AsyncSession = Depends(get_async_session),
     quote_id: str
 ):
-    quote = await session.get(Quote, quote_id)
+    with logfire.span("grabbing quote id# {id=}", id=quote_id):
+        quote = await session.get(Quote, quote_id)
+        if not quote:
+            raise HTTPException(status_code=404, detail="quote not found")
 
-    if not quote:
-        raise HTTPException(status_code=404, detail="quote not found")
+        await quote.awaitable_attrs.user
+        logfire.info(f"quote author: {quote.author_name}, category: {quote.category}")
 
-    user = await quote.awaitable_attrs.user
-    logfire.info(f":::user:::{ user } :::quote:::{ quote } :::", user=user, quote=quote)
     return quote
 
 
@@ -73,18 +78,20 @@ async def update_quote(
     quote_id: str,
     quote: QuoteUpdate
 ):
-    statement = select(Quote).where(Quote.id == quote_id)
-    db_quote = (await session.exec(statement)).one_or_none()
-    if not db_quote:
-        raise HTTPException(status_code=404, detail="Quote not found")
+    with logfire.span("grabbing quote id# {id=}", id=quote_id):
+        statement = select(Quote).where(Quote.id == quote_id)
+        db_quote = (await session.exec(statement)).one_or_none()
+        if not db_quote:
+            raise HTTPException(status_code=404, detail="Quote not found")
 
-    quote_data = quote.model_dump(exclude_unset=True)
-    for k, v in quote_data.items():
-        setattr(db_quote, k, v)
+        quote_data = quote.model_dump(exclude_unset=True)
+        for k, v in quote_data.items():
+            logfire.info("quote updated {key=} to {value=}", key=k, value=v)
+            setattr(db_quote, k, v)
 
-    session.add(db_quote)
-    await session.commit()
-    await session.refresh(db_quote)
+        session.add(db_quote)
+        await session.commit()
+        await session.refresh(db_quote)
 
     return db_quote
 
@@ -95,15 +102,15 @@ async def delete_quote(
     session: AsyncSession = Depends(get_async_session),
     quote_id: str
 ):
-    statement = select(Quote).where(Quote.id == quote_id)
-    quote = (await session.exec(statement)).one_or_none()
-    if not quote:
-        raise HTTPException(status_code=404, detail="Quote not found")
+    with logfire.span("deleting quote id# {id=}", id=quote_id):
+        statement = select(Quote).where(Quote.id == quote_id)
+        quote = (await session.exec(statement)).one_or_none()
+        if not quote:
+            raise HTTPException(status_code=404, detail="Quote not found")
 
-    author = quote.author_name
-
-    await session.delete(quote)
-    await session.commit()
+        author = quote.author_name
+        await session.delete(quote)
+        await session.commit()
 
     return {
         "ok": True,
