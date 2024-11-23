@@ -1,13 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 
 
 const App = () => {
-  const [searchTerm, setSearchTerm] = useState('');
   const welcome = {
     greeting: ">>welcome<<",
     title: "bubster<<>>dashboard"
-  }
+  };
   const quotes = [
     {
       id: "00000001",
@@ -28,9 +27,18 @@ const App = () => {
       text: "Get down into the basement, the british are coming."
     },
   ];
+
+  const [searchTerm, setSearchTerm] = useState(
+    localStorage.getItem('search') || ''
+  );
+
+  useEffect(() => {
+    localStorage.setItem('search', searchTerm);
+  }, [searchTerm]);
+
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
-  }
+  };
 
   const searchedQuotes = quotes.filter((quote) =>
     quote.text.toLowerCase().includes(searchTerm.toLowerCase())
