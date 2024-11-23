@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 
@@ -28,48 +27,53 @@ const App = () => {
       category: "funny",
       text: "Get down into the basement, the british are coming."
     },
-  ]
+  ];
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   }
 
   const searchedQuotes = quotes.filter((quote) =>
-    quote.text.includes(searchTerm)
+    quote.text.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   return (
     <div>
       <h1>{welcome.greeting}, {welcome.title}</h1>
 
-      <Search onSearch={handleSearch} />
+      <Search search={searchTerm} onSearch={handleSearch} />
 
       <hr />
 
       <List quotes={searchedQuotes} />
     </div>
-  )
-}
+  );
+};
 
-const Search = (props) => (
+const Search = ({ search, onSearch }) => (
   <div>
     <label htmlFor="search">Search: </label>
-    <input id="search" type="text" onChange={props.onSearch} />
+    <input
+      id="search"
+      type="text"
+      value={search}
+      onChange={onSearch}
+    />
   </div>
 );
 
-const List = (props) => (
+const List = ({ quotes }) => (
   <ul>
-    {props.quotes.map((quote) => (
-      <Quote key={quote.id} quote={quote} />
+    {quotes.map(({ id, ...quote }) => (
+      <Quote key={id} {...quote} />
     ))}
   </ul>
 );
 
-const Quote = (props) => (
+const Quote = ({ category, author_name, text }) => (
   <li>
-    <span>{props.quote.category}</span>
-    <span>{props.quote.author_name}</span>
-    <span>{props.quote.text}</span>
+    <span>{category}</span>
+    <span>{author_name}</span>
+    <span>{text}</span>
   </li>
 );
 
