@@ -1,40 +1,59 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 
+const initialQuotes = [
+  {
+    id: "00000001",
+    author_name: "Hemmingway",
+    category: "funny",
+    text: "An old man drinks himself stupid in a boat."
+  },
+  {
+    id: "00000002",
+    author_name: "Kennedy",
+    category: "funny",
+    text: "Ask what you can do for your country drunk."
+  },
+  {
+    id: "00000003",
+    author_name: "Washington",
+    category: "funny",
+    text: "Get down into the basement, the british are coming."
+  },
+];
 
-const App = () => {
-  const welcome = {
-    greeting: ">>welcome<<",
-    title: "bubster<<>>dashboard"
-  };
-  const quotes = [
-    {
-      id: "00000001",
-      author_name: "Hemmingway",
-      category: "funny",
-      text: "An old man drinks himself stupid in a boat."
-    },
-    {
-      id: "00000002",
-      author_name: "Kennedy",
-      category: "funny",
-      text: "Ask what you can do for your country drunk."
-    },
-    {
-      id: "00000003",
-      author_name: "Washington",
-      category: "funny",
-      text: "Get down into the basement, the british are coming."
-    },
-  ];
+const welcome = {
+  greeting: ">>welcome<<",
+  title: "bubster<<>>dashboard"
+};
 
-  const [searchTerm, setSearchTerm] = useState(
-    localStorage.getItem('search') || ''
+
+const useStorageState = (key, initialState) => {
+  const [value, setValue] = useState(
+    localStorage.getItem(key) || initialState
   );
 
   useEffect(() => {
-    localStorage.setItem('search', searchTerm);
-  }, [searchTerm]);
+    localStorage.setItem(key, value);
+  }, [value, key]);
+
+  return [value, setValue];
+};
+
+const App = () => {
+  const [searchTerm, setSearchTerm] = useStorageState(
+    'search',
+    ''
+  );
+  const [quotes, setQuotes] = useState(initialQuotes);
+
+  const handleRemoveQuote = (item) => {
+    const newQuotes = quotes.filter(
+      (quote) => item.id !== quote.id
+    );
+
+    setQuotes(newQuotes);
+  };
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
@@ -48,40 +67,64 @@ const App = () => {
     <div>
       <h1>{welcome.greeting}, {welcome.title}</h1>
 
-      <Search search={searchTerm} onSearch={handleSearch} />
+      <InputWithLabel
+        id="search"
+        value={searchTerm}
+        isFocused
+        onInputChange={handleSearch}
+      >
+        <strong>Search:</strong>
+      </InputWithLabel>
 
       <hr />
 
-      <List quotes={searchedQuotes} />
+      <List list={searchedQuotes} onRemoveItem={handleRemoveQuote} />
     </div>
   );
 };
 
-const Search = ({ search, onSearch }) => (
-  <div>
-    <label htmlFor="search">Search: </label>
+const InputWithLabel = ({
+  id,
+  value,
+  type = 'text',
+  onInputChange,
+  isFocused,
+  children,
+}) => (
+  <>
+    <label htmlFor={id}>{children}</label>
+    &nbsp;&nbsp;&nbsp;
     <input
-      id="search"
-      type="text"
-      value={search}
-      onChange={onSearch}
+      id={id}
+      type={type}
+      value={value}
+      autofocus={isFocused}
+      onChange={onInputChange}
     />
-  </div>
+  </>
 );
 
-const List = ({ quotes }) => (
+const List = ({ list, onRemoveItem }) => (
   <ul>
-    {quotes.map(({ id, ...quote }) => (
-      <Quote key={id} {...quote} />
+    {list.map((item) => (
+      <Item
+        key={item.id}
+        item={item}
+        onRemoveItem={onRemoveItem} />
     ))}
   </ul>
 );
 
-const Quote = ({ category, author_name, text }) => (
+const Item = ({ item, onRemoveItem }) => (
   <li>
-    <span>{category}</span>
-    <span>{author_name}</span>
-    <span>{text}</span>
+    <span>{item.category}</span>
+    <span>{item.author_name}</span>
+    <span>{item.text}</span>
+    <span>
+      <button type="button" onClick={() => onRemoveItem(item)}>
+        Dismiss
+      </button>
+    </span>
   </li>
 );
 
