@@ -40,12 +40,26 @@ const useStorageState = (key, initialState) => {
   return [value, setValue];
 };
 
+const getAsyncQuotes = () =>
+  new Promise((resolve) =>
+    setTimeout(
+      () => resolve({ data: { quotes: initialQuotes } }),
+      2000
+    )
+  );
+
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState(
     'search',
     ''
   );
-  const [quotes, setQuotes] = useState(initialQuotes);
+  const [quotes, setQuotes] = useState([]);
+
+  useEffect(() => {
+    getAsyncQuotes().then(result => {
+      setQuotes(result.data.quotes)
+    });
+  }, []);
 
   const handleRemoveQuote = (item) => {
     const newQuotes = quotes.filter(
@@ -98,7 +112,7 @@ const InputWithLabel = ({
       id={id}
       type={type}
       value={value}
-      autofocus={isFocused}
+      autoFocus={isFocused}
       onChange={onInputChange}
     />
   </>
