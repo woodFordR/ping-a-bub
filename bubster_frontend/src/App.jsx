@@ -54,11 +54,17 @@ const App = () => {
     ''
   );
   const [quotes, setQuotes] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
+
     getAsyncQuotes().then(result => {
       setQuotes(result.data.quotes)
-    });
+      setIsLoading(false);
+    })
+      .catch(() => setIsError(true));
   }, []);
 
   const handleRemoveQuote = (item) => {
@@ -77,6 +83,7 @@ const App = () => {
     quote.text.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
+
   return (
     <div>
       <h1>{welcome.greeting}, {welcome.title}</h1>
@@ -92,7 +99,16 @@ const App = () => {
 
       <hr />
 
-      <List list={searchedQuotes} onRemoveItem={handleRemoveQuote} />
+      {isError && <p>Something went wrong ...</p>}
+
+      {isLoading ? (
+        <p>Loading ...</p>
+      ) : (
+        <List
+          list={searchedQuotes}
+          onRemoveItem={handleRemoveQuote}
+        />
+      )}
     </div>
   );
 };
