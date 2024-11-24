@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useReducer, useState } from 'react'
 import './App.css'
 
 const initialQuotes = [
@@ -48,12 +48,28 @@ const getAsyncQuotes = () =>
     )
   );
 
+const quotesReducer = (state, action) => {
+  switch (action.type) {
+    case 'SET_QUOTES':
+      return action.payload;
+    case 'REMOVE_QUOTE':
+      return state.filter(
+        (quote) => action.payload.id !== quote.id
+      );
+    default:
+      throw new Error();
+  }
+};
+
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState(
     'search',
     ''
   );
-  const [quotes, setQuotes] = useState([]);
+  const [quotes, dispatchQuotes] = useReducer(
+    quotesReducer,
+    []
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
@@ -61,18 +77,20 @@ const App = () => {
     setIsLoading(true);
 
     getAsyncQuotes().then(result => {
-      setQuotes(result.data.quotes)
+      dispatchQuotes({
+        type: 'SET_QUOTES',
+        payload: result.data.quotes,
+      });
       setIsLoading(false);
     })
       .catch(() => setIsError(true));
   }, []);
 
   const handleRemoveQuote = (item) => {
-    const newQuotes = quotes.filter(
-      (quote) => item.id !== quote.id
-    );
-
-    setQuotes(newQuotes);
+    dispatchQuotes({
+      type: 'REMOVE_QUOTE',
+      payload: item,
+    });
   };
 
   const handleSearch = (event) => {
@@ -158,4 +176,5 @@ const Item = ({ item, onRemoveItem }) => (
   </li>
 );
 
-export default App
+export default App;
+
