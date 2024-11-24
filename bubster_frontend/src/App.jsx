@@ -40,6 +40,11 @@ const useStorageState = (key, initialState) => {
   return [value, setValue];
 };
 
+// const getAsyncQuotes = () =>
+//   new Promise((resolve, reject) =>
+//     setTimeout(reject, 2000)
+//   );
+
 const getAsyncQuotes = () =>
   new Promise((resolve) =>
     setTimeout(
@@ -50,12 +55,32 @@ const getAsyncQuotes = () =>
 
 const quotesReducer = (state, action) => {
   switch (action.type) {
-    case 'SET_QUOTES':
-      return action.payload;
+    case 'QUOTES_FETCH_INIT':
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+      };
+    case 'QUOTES_FETCH_SUCCESS':
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        data: action.payload,
+      };
+    case 'QUOTES_FETCH_FAILURE':
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+      };
     case 'REMOVE_QUOTE':
-      return state.filter(
-        (quote) => action.payload.id !== quote.id
-      );
+      return {
+        ...state,
+        data: state.data.filter(
+          (quote) => action.payload.id !== quote.id
+        ),
+      };
     default:
       throw new Error();
   }
@@ -68,22 +93,22 @@ const App = () => {
   );
   const [quotes, dispatchQuotes] = useReducer(
     quotesReducer,
-    []
+    { data: [], isLoading: false, isError: false },
   );
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
+    dispatchQuotes({ type: 'QUOTES_FETCH_INIT' });
 
-    getAsyncQuotes().then(result => {
-      dispatchQuotes({
-        type: 'SET_QUOTES',
-        payload: result.data.quotes,
-      });
-      setIsLoading(false);
-    })
-      .catch(() => setIsError(true));
+    getAsyncQuotes()
+      .then(result => {
+        dispatchQuotes({
+          type: 'QUOTES_FETCH_SUCCESS',
+          payload: result.data.quotes,
+        });
+      })
+      .catch(() =>
+        dispatchQuotes({ type: 'QUOTES_FETCH_FAILURE' })
+      );
   }, []);
 
   const handleRemoveQuote = (item) => {
@@ -97,7 +122,7 @@ const App = () => {
     setSearchTerm(event.target.value);
   };
 
-  const searchedQuotes = quotes.filter((quote) =>
+  const searchedQuotes = quotes.data.filter((quote) =>
     quote.text.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
@@ -117,9 +142,9 @@ const App = () => {
 
       <hr />
 
-      {isError && <p>Something went wrong ...</p>}
+      {quotes.isError && <p>Something went wrong ...</p>}
 
-      {isLoading ? (
+      {quotes.isLoading ? (
         <p>Loading ...</p>
       ) : (
         <List
