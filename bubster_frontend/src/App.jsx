@@ -1,26 +1,7 @@
 import { useEffect, useReducer, useState } from 'react'
 import './App.css'
 
-const initialQuotes = [
-  {
-    id: "00000001",
-    author_name: "Hemmingway",
-    category: "funny",
-    text: "An old man drinks himself stupid in a boat."
-  },
-  {
-    id: "00000002",
-    author_name: "Kennedy",
-    category: "funny",
-    text: "Ask what you can do for your country drunk."
-  },
-  {
-    id: "00000003",
-    author_name: "Washington",
-    category: "funny",
-    text: "Get down into the basement, the british are coming."
-  },
-];
+const API_ENDPOINT = "http://localhost:8000/quotes"
 
 const welcome = {
   greeting: ">>welcome<<",
@@ -39,19 +20,6 @@ const useStorageState = (key, initialState) => {
 
   return [value, setValue];
 };
-
-// const getAsyncQuotes = () =>
-//   new Promise((resolve, reject) =>
-//     setTimeout(reject, 2000)
-//   );
-
-const getAsyncQuotes = () =>
-  new Promise((resolve) =>
-    setTimeout(
-      () => resolve({ data: { quotes: initialQuotes } }),
-      2000
-    )
-  );
 
 const quotesReducer = (state, action) => {
   switch (action.type) {
@@ -99,11 +67,12 @@ const App = () => {
   useEffect(() => {
     dispatchQuotes({ type: 'QUOTES_FETCH_INIT' });
 
-    getAsyncQuotes()
-      .then(result => {
+    fetch(`${API_ENDPOINT}`)
+      .then((response) => response.json())
+      .then((result) => {
         dispatchQuotes({
           type: 'QUOTES_FETCH_SUCCESS',
-          payload: result.data.quotes,
+          payload: result,
         });
       })
       .catch(() =>
