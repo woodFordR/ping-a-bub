@@ -1,7 +1,7 @@
 import { useEffect, useReducer, useState } from 'react'
 import './App.css'
 
-const API_ENDPOINT = "http://localhost:8000/quotes"
+const API_ENDPOINT = "http://localhost:8000/quotes/search/"
 
 const welcome = {
   greeting: ">>welcome<<",
@@ -65,11 +65,13 @@ const App = () => {
   );
 
   useEffect(() => {
+    if (!searchTerm) return;
     dispatchQuotes({ type: 'QUOTES_FETCH_INIT' });
 
-    fetch(`${API_ENDPOINT}`)
+    fetch(`${API_ENDPOINT}${searchTerm}`)
       .then((response) => response.json())
       .then((result) => {
+        console.log(result);
         dispatchQuotes({
           type: 'QUOTES_FETCH_SUCCESS',
           payload: result,
@@ -78,7 +80,7 @@ const App = () => {
       .catch(() =>
         dispatchQuotes({ type: 'QUOTES_FETCH_FAILURE' })
       );
-  }, []);
+  }, [searchTerm]);
 
   const handleRemoveQuote = (item) => {
     dispatchQuotes({
@@ -90,11 +92,6 @@ const App = () => {
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
-
-  const searchedQuotes = quotes.data.filter((quote) =>
-    quote.text.toLowerCase().includes(searchTerm.toLowerCase())
-  )
-
 
   return (
     <div>
@@ -117,10 +114,11 @@ const App = () => {
         <p>Loading ...</p>
       ) : (
         <List
-          list={searchedQuotes}
+          list={quotes}
           onRemoveItem={handleRemoveQuote}
         />
-      )}
+      )
+      }
     </div>
   );
 };
@@ -148,11 +146,12 @@ const InputWithLabel = ({
 
 const List = ({ list, onRemoveItem }) => (
   <ul>
-    {list.map((item) => (
+    {list.data.map((item) => (
       <Item
         key={item.id}
         item={item}
-        onRemoveItem={onRemoveItem} />
+        onRemoveItem={onRemoveItem}
+      />
     ))}
   </ul>
 );

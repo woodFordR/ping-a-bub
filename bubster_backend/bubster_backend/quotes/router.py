@@ -2,7 +2,7 @@
 
 import logfire
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import select
+from sqlmodel import column, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from bubster_backend.db import get_async_session
 from bubster_backend.schemas import QuotePublicWithUser
@@ -118,5 +118,24 @@ async def delete_quote(
         "deleted_id": quote_id
     }
 
+
+@router.get("/search/{search_term}", response_model=list[QuotePublic])
+async def search_quotes(
+    *,
+    session: AsyncSession = Depends(get_async_session),
+    search_term: str
+):
+    # ordering = ''
+    # offset = ''
+    # limit = ''
+    with logfire.span("searching quotes ..."):
+        statement = select(Quote).filter(
+            column("text").contains(search_term)
+        )
+        # .order_by(ordering).offset(offset).limit(limit).all()
+        quotes = (await session.exec(statement)).all()
+        if not quotes:
+            return {"error": "no quotes found"}
+        return quotes
 
 
