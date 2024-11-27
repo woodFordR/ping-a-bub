@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     db_url: PostgresDsn
     debug: bool
     environment: str
-    redis_url: RedisDsn = 'redis://redis@localhost:6379/1'
+    redis_url: str = 'redis://redis@localhost:6379/1'
     testing: bool
 
 

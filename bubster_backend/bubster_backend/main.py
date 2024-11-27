@@ -1,12 +1,12 @@
 # bubster_backend/main
 
+from logging import basicConfig
 from datetime import datetime
 import logfire
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 from bubster_backend import settings
-from bubster_backend.db import async_engine
 import bubster_backend.health.router as health
 import bubster_backend.quotes.router as quotes
 import bubster_backend.users.router as users
@@ -24,19 +24,23 @@ def config_routing_operation_ids(app: FastAPI) -> None:
 
 
 def create_application() -> FastAPI:
-    application = FastAPI(debug=settings.debug)
-
+    app = FastAPI(debug=settings.debug)
     logfire.configure(
         service_name="bubster_backend"
     )
-    logfire.instrument_fastapi(application)
+    logfire.instrument_asyncpg()
 
-    application.include_router(health.router)
-    application.include_router(quotes.router)
-    application.include_router(users.router)
-    config_routing_operation_ids(application)
+    # standard log sink
+    basicConfig(handlers=[logfire.LogfireLoggingHandler()])
 
-    application.add_middleware(
+    # adding routes
+    app.include_router(health.router)
+    app.include_router(quotes.router)
+    app.include_router(users.router)
+    config_routing_operation_ids(app)
+
+    # enable cors
+    app.add_middleware(
         CORSMiddleware,
         allow_origins=origins,
         allow_credentials=True,
@@ -44,7 +48,7 @@ def create_application() -> FastAPI:
         allow_headers=["*"],
     )
 
-    return application
+    return app
 
 
 app = create_application()

@@ -106,7 +106,7 @@ async def delete_quote(
         statement = select(Quote).where(Quote.id == quote_id)
         quote = (await session.exec(statement)).one_or_none()
         if not quote:
-            raise HTTPException(status_code=404, detail="Quote not found")
+            raise HTTPException(status_code=404, detail="No quote was found.")
 
         author = quote.author_name
         await session.delete(quote)
@@ -134,8 +134,7 @@ async def search_quotes(
         )
         # .order_by(ordering).offset(offset).limit(limit).all()
         quotes = (await session.exec(statement)).all()
-        if not quotes:
-            return {"error": "no quotes found"}
+
         return quotes
 
 

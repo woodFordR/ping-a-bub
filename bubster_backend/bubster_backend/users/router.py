@@ -20,7 +20,6 @@ router = APIRouter(
 )
 
 logfire.configure()
-logfire.instrument_asyncpg()
 
 
 def get_hash_response(pswd: str) -> str:
