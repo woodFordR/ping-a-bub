@@ -1,0 +1,18 @@
+meta {
+  name: update a quote
+  type: http
+  seq: 4
+}
+
+patch {
+  url: http://localhost:8000/quotes/66601704-362e-4afc-a726-fdd06c91f77e
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "author_name": "dada & some squish and mostly mama",
+    "text": "la la la la la la"
+  }
+}

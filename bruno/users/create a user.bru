@@ -1,0 +1,19 @@
+meta {
+  name: create a user
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8000/users
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "ladada@woodford.io",
+    "username": "xxxMarks",
+    "password": "1234abcd"
+  }
+}

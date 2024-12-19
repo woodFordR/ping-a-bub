@@ -1,0 +1,21 @@
+meta {
+  name: create quote
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8000/quotes
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "author_name": "dada",
+      "category": "happy",
+      "text": "squish is sweeping",
+      "user_id": "79b99b27-aad7-4506-9e35-f01654228876"
+  }
+  
+}

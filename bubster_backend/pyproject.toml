@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "bubster_backend"
+version = "0.3.0"
+description = ""
+authors = ["woodFordR <adam@kaewell.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+uvicorn = {extras = ["standard"], version = "^0.32.1"}
+fastapi = "^0.115.2"
+pydantic-settings = "^2.5.2"
+logfire = {extras = ["asyncpg"], version = "^2.4.1"}
+sqlmodel = "^0.0.22"
+alembic = "^1.13.3"
+argon2-cffi = "^23.1.0"
+pydantic = {extras = ["email"], version = "^2.9.2"}
+opentelemetry-instrumentation-asgi = "^0.49b2"
+opentelemetry-instrumentation-fastapi = "^0.49b2"
+opentelemetry-util-http = "^0.49b2"
+asyncpg = "^0.30.0"
+pyyaml = "^6.0.2"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.36"}
+opentelemetry-instrumentation-asyncio = "^0.49b2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+pytest-cov = "^6.0.0"
+
+[tool.poetry.plugins.dotenv]
+ignore = "false"
+location = ".env"
+
+[tool.logfire]
+pydantic_plugin_record = "all"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+

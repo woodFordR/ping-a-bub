@@ -1,0 +1,18 @@
+meta {
+  name: update a user
+  type: http
+  seq: 4
+}
+
+patch {
+  url: http://localhost:8000/users/889dd9b4-3035-465b-a36b-445602eef4e5
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "akak@akakak.com",
+    "username": "morpheousMaximus31"
+  }
+}
