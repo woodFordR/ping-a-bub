@@ -59,28 +59,35 @@ const App = () => {
     'search',
     ''
   );
+  const [url, setUrl] = React.useState(
+    `${API_ENDPOINT}${searchTerm}`
+  );
   const [quotes, dispatchQuotes] = useReducer(
     quotesReducer,
     { data: [], isLoading: false, isError: false },
   );
 
-  useEffect(() => {
+  const handleFetchQuotes = React.useCallback(() => {
     if (!searchTerm) return;
+
     dispatchQuotes({ type: 'QUOTES_FETCH_INIT' });
 
-    fetch(`${API_ENDPOINT}${searchTerm}`)
+    fetch(url)
       .then((response) => response.json())
       .then((result) => {
-        console.log(result);
         dispatchQuotes({
           type: 'QUOTES_FETCH_SUCCESS',
-          payload: result,
+          payload: result.hits,
         });
       })
       .catch(() =>
         dispatchQuotes({ type: 'QUOTES_FETCH_FAILURE' })
       );
-  }, [searchTerm]);
+  }, [url]);
+
+  useEffect(() => {
+    handleFetchQuotes();
+  }, [handleFetchQuotes]);
 
   const handleRemoveQuote = (item) => {
     dispatchQuotes({
@@ -89,8 +96,12 @@ const App = () => {
     });
   };
 
-  const handleSearch = (event) => {
+  const handleSearchInput = (event) => {
     setSearchTerm(event.target.value);
+  };
+
+  const handleSearchSubmit = () => {
+    setUrl(`${API_ENDPOINT}${searchTerm}`);
   };
 
   return (
@@ -101,10 +112,17 @@ const App = () => {
         id="search"
         value={searchTerm}
         isFocused
-        onInputChange={handleSearch}
+        onInputChange={handleSearchInput}
       >
         <strong>Search:</strong>
       </InputWithLabel>
+      <button
+        type="button"
+        disabled={!searchTerm}
+        onClick={handleSearchSubmit}
+      >
+        Submit
+      </button>
 
       <hr />
 
