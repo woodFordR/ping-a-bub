@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react'
+import { useCallback, useEffect, useReducer, useState } from 'react'
 import './App.css'
 
 const API_ENDPOINT = "http://localhost:8000/quotes/search/"
@@ -59,7 +59,7 @@ const App = () => {
     'search',
     ''
   );
-  const [url, setUrl] = React.useState(
+  const [url, setUrl] = useState(
     `${API_ENDPOINT}${searchTerm}`
   );
   const [quotes, dispatchQuotes] = useReducer(
@@ -67,7 +67,7 @@ const App = () => {
     { data: [], isLoading: false, isError: false },
   );
 
-  const handleFetchQuotes = React.useCallback(() => {
+  const handleFetchQuotes = useCallback(() => {
     if (!searchTerm) return;
 
     dispatchQuotes({ type: 'QUOTES_FETCH_INIT' });
@@ -164,7 +164,7 @@ const InputWithLabel = ({
 
 const List = ({ list, onRemoveItem }) => (
   <ul>
-    {list.data.map((item) => (
+    {list.data && list.data.map((item) => (
       <Item
         key={item.id}
         item={item}
