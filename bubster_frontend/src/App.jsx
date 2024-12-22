@@ -77,7 +77,7 @@ const App = () => {
       .then((result) => {
         dispatchQuotes({
           type: 'QUOTES_FETCH_SUCCESS',
-          payload: result.hits,
+          payload: result,
         });
       })
       .catch(() =>

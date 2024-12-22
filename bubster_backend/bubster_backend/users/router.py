@@ -19,8 +19,6 @@ router = APIRouter(
     prefix="/users"
 )
 
-logfire.configure()
-
 
 def get_hash_response(pswd: str) -> str:
     ph = PasswordHasher()

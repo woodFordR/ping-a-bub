@@ -18,9 +18,6 @@ router = APIRouter(
     prefix="/quotes"
 )
 
-logfire.configure()
-logfire.instrument_asyncpg()
-
 
 @router.get("", response_model=list[QuotePublicWithUser])
 async def get_quotes(
