@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useReducer, useState } from 'react'
+import axios from 'axios';
 import './App.css'
 
 const API_ENDPOINT = "http://localhost:8000/quotes/search/"
@@ -72,12 +73,13 @@ const App = () => {
 
     dispatchQuotes({ type: 'QUOTES_FETCH_INIT' });
 
-    fetch(url)
-      .then((response) => response.json())
+    axios.
+      get(url)
       .then((result) => {
+        console.log(result);
         dispatchQuotes({
           type: 'QUOTES_FETCH_SUCCESS',
-          payload: result,
+          payload: result.data,
         });
       })
       .catch(() =>
