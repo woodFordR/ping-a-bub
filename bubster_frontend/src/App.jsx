@@ -68,23 +68,19 @@ const App = () => {
     { data: [], isLoading: false, isError: false },
   );
 
-  const handleFetchQuotes = useCallback(() => {
-    if (!searchTerm) return;
-
+  const handleFetchQuotes = useCallback(async () => {
     dispatchQuotes({ type: 'QUOTES_FETCH_INIT' });
 
-    axios.
-      get(url)
-      .then((result) => {
-        console.log(result);
-        dispatchQuotes({
-          type: 'QUOTES_FETCH_SUCCESS',
-          payload: result.data,
-        });
-      })
-      .catch(() =>
-        dispatchQuotes({ type: 'QUOTES_FETCH_FAILURE' })
-      );
+    try {
+      const response = await axios.get(url)
+
+      dispatchQuotes({
+        type: 'QUOTES_FETCH_SUCCESS',
+        payload: response.data,
+      });
+    } catch {
+      dispatchQuotes({ type: 'QUOTES_FETCH_FAILURE' });
+    }
   }, [url]);
 
   useEffect(() => {
