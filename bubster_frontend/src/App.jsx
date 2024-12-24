@@ -105,16 +105,14 @@ const App = () => {
   };
 
   return (
-    <div>
-      <h1>{welcome.greeting}, {welcome.title}</h1>
+    <div className="container">
+      <h1 className="headline-primary">{welcome.greeting}, {welcome.title}</h1>
 
       <SearchForm
         searchTerm={searchTerm}
         onSearchInput={handleSearchInput}
         onSearchSubmit={handleSearchSubmit}
       />
-
-      <hr />
 
       {quotes.isError && <p>Something went wrong ...</p>}
 
@@ -136,18 +134,19 @@ const InputWithLabel = ({
   value,
   type = 'text',
   onInputChange,
-  isFocused,
+  inputRef,
   children,
 }) => (
   <>
-    <label htmlFor={id}>{children}</label>
+    <label htmlFor={id} className="label">{children}</label>
     &nbsp;&nbsp;&nbsp;
     <input
+      ref={inputRef}
       id={id}
       type={type}
       value={value}
-      autoFocus={isFocused}
       onChange={onInputChange}
+      className="input"
     />
   </>
 );
@@ -165,12 +164,16 @@ const List = ({ list, onRemoveItem }) => (
 );
 
 const Item = ({ item, onRemoveItem }) => (
-  <li>
-    <span>{item.category}</span>
-    <span>{item.author_name}</span>
-    <span>{item.text}</span>
-    <span>
-      <button type="button" onClick={() => onRemoveItem(item)}>
+  <li className="item">
+    <span style={{ width: '10%' }}>{item.category}</span>
+    <span style={{ width: '30%' }}>{item.author_name}</span>
+    <span style={{ width: '50%' }}>{item.text}</span>
+    <span style={{ width: '10%' }}>
+      <button
+        type="button"
+        onClick={() => onRemoveItem(item)}
+        className="button button_small"
+      >
         Dismiss
       </button>
     </span>
@@ -182,7 +185,7 @@ const SearchForm = ({
   onSearchInput,
   onSearchSubmit
 }) => (
-  <form onSubmit={onSearchSubmit}>
+  <form onSubmit={onSearchSubmit} className="search-form">
     <InputWithLabel
       id="search"
       value={searchTerm}
@@ -191,9 +194,11 @@ const SearchForm = ({
     >
       <strong>Search:</strong>
     </InputWithLabel>
+    &nbsp;&nbsp;&nbsp;
     <button
       type="submit"
       disabled={!searchTerm}
+      className="button button_large"
     >
       Submit
     </button>
