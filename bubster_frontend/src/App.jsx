@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useReducer, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+  useState
+} from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 import './App.css'
@@ -94,12 +100,18 @@ const StyledInput = styled.input`
 `;
 
 const useStorageState = (key, initialState) => {
+  const isMounted = useRef(false);
+
   const [value, setValue] = useState(
     localStorage.getItem(key) || initialState
   );
 
   useEffect(() => {
-    localStorage.setItem(key, value);
+    if (!isMounted.current) {
+      isMounted.current = true;
+    } else {
+      localStorage.setItem(key, value);
+    }
   }, [value, key]);
 
   return [value, setValue];
