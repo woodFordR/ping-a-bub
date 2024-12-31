@@ -1,6 +1,8 @@
 import {
+  memo,
   useCallback,
   useEffect,
+  useMemo,
   useReducer,
   useRef,
   useState
@@ -23,13 +25,15 @@ const StyledContainer = styled.div`
 
   background: #83a4d4;
   background: linear-gradient(to left, #b6fbff, #83a4d4);
-  color: #1712112;
+  color: #171212;
 `
 
 const StyledHeadlinePrimary = styled.h1`
   font-size: 48px;
-  font-size: 4;
-  font-size: 48px;
+`
+
+const StyledHeadlineSecondary = styled.h2`
+  font-size: 24px;
 `
 
 const StyledItem = styled.li`
@@ -99,6 +103,7 @@ const StyledInput = styled.input`
   font-size: 24px;
 `;
 
+
 const useStorageState = (key, initialState) => {
   const isMounted = useRef(false);
 
@@ -150,10 +155,20 @@ const quotesReducer = (state, action) => {
   }
 };
 
+const getSumLikes = (quotes) => {
+  console.log('C');
+
+  return quotes.data.reduce(
+    (result, value) => result + value.num_likes,
+    0
+  );
+}
+
+
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState(
     'search',
-    ''
+    'has'
   );
   const [url, setUrl] = useState(
     `${API_ENDPOINT}${searchTerm}`
@@ -182,12 +197,12 @@ const App = () => {
     handleFetchQuotes();
   }, [handleFetchQuotes]);
 
-  const handleRemoveQuote = (item) => {
+  const handleRemoveQuote = useCallback((item) => {
     dispatchQuotes({
       type: 'REMOVE_QUOTE',
       payload: item,
     });
-  };
+  }, []);
 
   const handleSearchInput = (event) => {
     setSearchTerm(event.target.value);
@@ -199,9 +214,15 @@ const App = () => {
     event.preventDefault();
   };
 
+  const sumLikes = useMemo(
+    () => getSumLikes(quotes),
+    [quotes]
+  );
+
   return (
     <StyledContainer>
       <StyledHeadlinePrimary>{welcome.greeting}, {welcome.title}</StyledHeadlinePrimary>
+      <StyledHeadlineSecondary>{sumLikes}</StyledHeadlineSecondary>
 
       <SearchForm
         searchTerm={searchTerm}
@@ -247,16 +268,19 @@ const InputWithLabel = ({
   </>
 );
 
-const List = ({ list, onRemoveItem }) => (
-  <ul>
-    {list.data.map((item) => (
-      <Item
-        key={item.id}
-        item={item}
-        onRemoveItem={onRemoveItem}
-      />
-    ))}
-  </ul>
+const List = memo(
+  ({ list, onRemoveItem }) =>
+  (
+    <ul>
+      {list.data.map((item) => (
+        <Item
+          key={item.id}
+          item={item}
+          onRemoveItem={onRemoveItem}
+        />
+      ))}
+    </ul>
+  )
 );
 
 const Item = ({ item, onRemoveItem }) => (
