@@ -1,5 +1,8 @@
 import {
+  ChangeEvent,
   memo,
+  FormEvent,
+  ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -14,11 +17,78 @@ import Check from './check.svg?react';
 
 const API_ENDPOINT = "http://localhost:8000/quotes/search/"
 
+// type definitions
+type Quote = {
+  id: string;
+  author_name: string;
+  category: string;
+  text: string;
+  num_likes: number;
+};
+
+type ItemProps = {
+  item: Quote;
+  onRemoveItem: (item: Quote) => void;
+};
+
+type ListProps = {
+  list: QuotesState;
+  onRemoveItem: (item: Quote) => void;
+}
+
+type QuotesState = {
+  data: Quote[];
+  isLoading: boolean;
+  isError: boolean;
+};
+
+type QuotesFetchInitAction = {
+  type: 'QUOTES_FETCH_INIT';
+};
+
+type QuotesFetchSuccessAction = {
+  type: 'QUOTES_FETCH_SUCCESS';
+  payload: Quote[];
+};
+
+type QuotesFetchFailureAction = {
+  type: 'QUOTES_FETCH_FAILURE';
+};
+
+type QuotesRemoveAction = {
+  type: 'REMOVE_QUOTE';
+  payload: Quote;
+};
+
+type QuotesAction =
+  QuotesFetchInitAction
+  | QuotesFetchFailureAction
+  | QuotesFetchSuccessAction
+  | QuotesRemoveAction;
+
+type SearchFormProps = {
+  searchTerm: string;
+  onSearchInput: (event: ChangeEvent<HTMLInputElement>) => void;
+  onSearchSubmit: (event: FormEvent<HTMLFormElement>) => void;
+}
+
+type InputWithLabelProps = {
+  id: string;
+  value: string;
+  type?: string;
+  onInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  isFocused?: boolean;
+  children: ReactNode;
+}
+
+
+// welcome message
 const welcome = {
   greeting: ">>welcome<<",
   title: "bubster<<>>dashboard"
 };
 
+// styled components
 const StyledContainer = styled.div`
   height: 100vw;
   padding: 20px;
@@ -42,7 +112,7 @@ const StyledItem = styled.li`
   padding-bottom: 5px;
 `;
 
-const StyledColumn = styled.span`
+const StyledColumn = styled.span<{ width?: string; }>`
   padding: 0 5px;
   white-space: nowrap;
   overflow: hidden;
@@ -104,7 +174,10 @@ const StyledInput = styled.input`
 `;
 
 
-const useStorageState = (key, initialState) => {
+const useStorageState = (
+  key: string,
+  initialState: string
+): [string, (newValue: string) => void] => {
   const isMounted = useRef(false);
 
   const [value, setValue] = useState(
@@ -119,10 +192,13 @@ const useStorageState = (key, initialState) => {
     }
   }, [value, key]);
 
-  return [value, setValue];
+  return [value, setValue] as const;
 };
 
-const quotesReducer = (state, action) => {
+const quotesReducer = (
+  state: QuotesState,
+  action: QuotesAction
+) => {
   switch (action.type) {
     case 'QUOTES_FETCH_INIT':
       return {
@@ -155,7 +231,7 @@ const quotesReducer = (state, action) => {
   }
 };
 
-const getSumLikes = (quotes) => {
+const getSumLikes = (quotes: QuotesState) => {
   console.log('C');
 
   return quotes.data.reduce(
@@ -197,18 +273,22 @@ const App = () => {
     handleFetchQuotes();
   }, [handleFetchQuotes]);
 
-  const handleRemoveQuote = useCallback((item) => {
+  const handleRemoveQuote = useCallback((item: Quote) => {
     dispatchQuotes({
       type: 'REMOVE_QUOTE',
       payload: item,
     });
   }, []);
 
-  const handleSearchInput = (event) => {
+  const handleSearchInput = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
     setSearchTerm(event.target.value);
   };
 
-  const handleSearchSubmit = (event) => {
+  const handleSearchSubmit = (
+    event: FormEvent<HTMLFormElement>
+  ) => {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
 
     event.preventDefault();
@@ -250,26 +330,36 @@ const InputWithLabel = ({
   value,
   type = 'text',
   onInputChange,
-  inputRef,
+  isFocused,
   children,
-}) => (
-  <>
-    <StyledLabel htmlFor={id}>{children}</StyledLabel>
-    &nbsp;&lt;&lt;&nbsp;
-    <StyledInput
-      ref={inputRef}
-      id={id}
-      type={type}
-      value={value}
-      onChange={onInputChange}
-      className="input"
-    />
-    &nbsp;&gt;&gt;&nbsp;
-  </>
-);
+}: InputWithLabelProps) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isFocused && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isFocused]);
+
+  return (
+    <>
+      <StyledLabel htmlFor={id}>{children}</StyledLabel>
+      &nbsp;&lt;&lt;&nbsp;
+      <StyledInput
+        ref={inputRef}
+        id={id}
+        type={type}
+        value={value}
+        onChange={onInputChange}
+        className="input"
+      />
+      &nbsp;&gt;&gt;&nbsp;
+    </>
+  );
+};
 
 const List = memo(
-  ({ list, onRemoveItem }) =>
+  ({ list, onRemoveItem }: ListProps) =>
   (
     <ul>
       {list.data.map((item) => (
@@ -283,7 +373,7 @@ const List = memo(
   )
 );
 
-const Item = ({ item, onRemoveItem }) => (
+const Item = ({ item, onRemoveItem }: ItemProps) => (
   <StyledItem>
     <StyledColumn width="10%">{item.category}</StyledColumn>
     <StyledColumn width="30%">{item.author_name}</StyledColumn>
@@ -303,7 +393,7 @@ const SearchForm = ({
   searchTerm,
   onSearchInput,
   onSearchSubmit
-}) => (
+}: SearchFormProps) => (
   <StyledSearchForm onSubmit={onSearchSubmit}>
     <InputWithLabel
       id="search"
