@@ -10,12 +10,26 @@ import {
   useRef,
   useState
 } from 'react';
+import CheckIcon from './assets/check.svg?react';
+// import CheckIcon from './assets/check.svg?react';
+
 import axios from 'axios';
 import styled from 'styled-components';
 import './App.css'
-import Check from './check.svg?react';
 
+
+// welcome gear
 const API_ENDPOINT = "http://localhost:8000/quotes/search/"
+const welcome = {
+  greeting: ">>welcome<<",
+  title: "bubster<<>>dashboard"
+};
+
+// defining theme colors
+const limegreen = "#7EBD01";
+const pastelblue = "#B3EBF2";
+const black = "#171212";
+const white = "#ffffff";
 
 // type definitions
 type Quote = {
@@ -82,19 +96,13 @@ type InputWithLabelProps = {
 }
 
 
-// welcome message
-const welcome = {
-  greeting: ">>welcome<<",
-  title: "bubster<<>>dashboard"
-};
-
 // styled components
 const StyledContainer = styled.div`
   height: 100vw;
   padding: 20px;
 
-  background: #7EBD01;
-  background: linear-gradient(to left, #B3EBF2, #7EBD01);
+  background: ${limegreen};
+  background: linear-gradient(to left, ${pastelblue}, ${limegreen});
   color: #171212;
 `;
 
@@ -128,19 +136,19 @@ const StyledColumn = styled.span<{ width?: string; }>`
 
 const StyledButton = styled.button`
   background: transparent;
-  border: 1px solid #171212;
+  border: 1px solid ${black};
   padding: 5px;
   cursor: pointer;
+  font-size: 24px;
 
   transition: all 0.2s ease-in;
 
   &:hover {
-    background: "#171212";
-    color: "#ffffff";
+    color: ${black};
 
     svg > g {
-      fill: "#7EBD01";
-      stroke: "#ffffff";
+      fill: ${black};
+      stroke: ${white};
     }
   }
 `;
@@ -160,14 +168,14 @@ const StyledSearchForm = styled.form`
 `;
 
 const StyledLabel = styled.label`
-  border: 1px solid #171212;
+  border: 1px solid ${black};
   padding-left: 5px;
   font-size: 24px;
 `;
 
 const StyledInput = styled.input`
   border: none;
-  border-bottom: 1px solid #171212;
+  border-bottom: 1px solid ${black};
   background-color: transparent;
 
   font-size: 24px;
@@ -383,7 +391,7 @@ const Item = ({ item, onRemoveItem }: ItemProps) => (
         type="button"
         onClick={() => onRemoveItem(item)}
       >
-        <Check height="18px" width="18px" />
+        <CheckIcon width="18px" height="18px" />
       </StyledButtonSmall>
     </StyledColumn>
   </StyledItem>
