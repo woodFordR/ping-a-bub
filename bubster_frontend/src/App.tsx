@@ -93,18 +93,18 @@ const StyledContainer = styled.div`
   height: 100vw;
   padding: 20px;
 
-  background: #83a4d4;
-  background: linear-gradient(to left, #b6fbff, #83a4d4);
+  background: #7EBD01;
+  background: linear-gradient(to left, #B3EBF2, #7EBD01);
   color: #171212;
-`
+`;
 
 const StyledHeadlinePrimary = styled.h1`
   font-size: 48px;
-`
+`;
 
 const StyledHeadlineSecondary = styled.h2`
   font-size: 24px;
-`
+`;
 
 const StyledItem = styled.li`
   display: flex;
@@ -132,15 +132,15 @@ const StyledButton = styled.button`
   padding: 5px;
   cursor: pointer;
 
-  transition: all 0.1s ease-in;
+  transition: all 0.2s ease-in;
 
   &:hover {
-    background: #171212;
-    color: #ffffff;
+    background: "#171212";
+    color: "#ffffff";
 
     svg > g {
-      fill: #ffffff;
-      stroke: #ffffff;
+      fill: "#7EBD01";
+      stroke: "#ffffff";
     }
   }
 `;
@@ -235,7 +235,7 @@ const getSumLikes = (quotes: QuotesState) => {
   console.log('C');
 
   return quotes.data.reduce(
-    (result, value) => result + value.num_likes,
+    (result, value) => result + (value.num_likes || 0),
     0
   );
 }
@@ -244,7 +244,7 @@ const getSumLikes = (quotes: QuotesState) => {
 const App = () => {
   const [searchTerm, setSearchTerm] = useStorageState(
     'search',
-    'has'
+    'is'
   );
   const [url, setUrl] = useState(
     `${API_ENDPOINT}${searchTerm}`
