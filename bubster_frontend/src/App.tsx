@@ -11,7 +11,6 @@ import {
   useState
 } from 'react';
 import CheckIcon from './assets/check.svg?react';
-// import CheckIcon from './assets/check.svg?react';
 
 import axios from 'axios';
 import styled from 'styled-components';
@@ -165,12 +164,14 @@ const StyledSearchForm = styled.form`
   padding: 10px 0 20px 0;
   display: flex;
   align-items: baseline;
+  justify-content: center;
 `;
 
 const StyledLabel = styled.label`
   border: 1px solid ${black};
-  padding-left: 5px;
+  padding: 5px;
   font-size: 24px;
+  border-radius: 10px;
 `;
 
 const StyledInput = styled.input`
@@ -384,8 +385,8 @@ const List = memo(
 const Item = ({ item, onRemoveItem }: ItemProps) => (
   <StyledItem>
     <StyledColumn width="10%">{item.category}</StyledColumn>
-    <StyledColumn width="30%">{item.author_name}</StyledColumn>
-    <StyledColumn width="50%">{item.text}</StyledColumn>
+    <StyledColumn width="40%">{item.author_name}</StyledColumn>
+    <StyledColumn width="40%">{item.text}</StyledColumn>
     <StyledColumn width="10%">
       <StyledButtonSmall
         type="button"

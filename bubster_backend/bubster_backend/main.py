@@ -28,7 +28,6 @@ def create_application() -> FastAPI:
     logfire.configure(
         service_name="bubster_backend"
     )
-    logfire.instrument_asyncpg()
 
     # standard log sink
     basicConfig(handlers=[logfire.LogfireLoggingHandler()])
