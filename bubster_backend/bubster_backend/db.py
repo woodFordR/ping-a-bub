@@ -15,6 +15,10 @@ engine = create_async_engine(
     future=True
 )
 
+logfire.configure(
+    service_name="bubster_backend"
+)
+logfire.instrument_asyncpg()
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSession(engine) as session:

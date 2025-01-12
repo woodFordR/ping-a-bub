@@ -10,12 +10,25 @@ import {
   useRef,
   useState
 } from 'react';
+import CheckIcon from './assets/check.svg?react';
+
 import axios from 'axios';
 import styled from 'styled-components';
 import './App.css'
-import Check from './check.svg?react';
 
+
+// welcome gear
 const API_ENDPOINT = "http://localhost:8000/quotes/search/"
+const welcome = {
+  greeting: ">>welcome<<",
+  title: "bubster<<>>dashboard"
+};
+
+// defining theme colors
+const limegreen = "#7EBD01";
+const pastelblue = "#B3EBF2";
+const black = "#171212";
+const white = "#ffffff";
 
 // type definitions
 type Quote = {
@@ -82,20 +95,14 @@ type InputWithLabelProps = {
 }
 
 
-// welcome message
-const welcome = {
-  greeting: ">>welcome<<",
-  title: "bubster<<>>dashboard"
-};
-
 // styled components
 const StyledContainer = styled.div`
   height: 100vw;
   padding: 20px;
 
-  background: #7EBD01;
-  background: linear-gradient(to left, #B3EBF2, #7EBD01);
-  color: #171212;
+  background: ${limegreen};
+  background: linear-gradient(to left, ${pastelblue}, ${limegreen});
+  color: ${black};
 `;
 
 const StyledHeadlinePrimary = styled.h1`
@@ -128,19 +135,20 @@ const StyledColumn = styled.span<{ width?: string; }>`
 
 const StyledButton = styled.button`
   background: transparent;
-  border: 1px solid #171212;
+  border: 1px solid ${black};
   padding: 5px;
   cursor: pointer;
+  font-size: 24px;
 
-  transition: all 0.2s ease-in;
+  transition: all 0.1s ease-in;
 
   &:hover {
-    background: "#171212";
-    color: "#ffffff";
+    color: ${black};
+    border: 1px solid ${white};
 
-    svg > g {
-      fill: "#7EBD01";
-      stroke: "#ffffff";
+    &:hover svg > g {
+      fill: ${white};
+      stroke: ${white};
     }
   }
 `;
@@ -157,17 +165,19 @@ const StyledSearchForm = styled.form`
   padding: 10px 0 20px 0;
   display: flex;
   align-items: baseline;
+  justify-content: center;
 `;
 
 const StyledLabel = styled.label`
-  border: 1px solid #171212;
-  padding-left: 5px;
+  border: 1px solid ${black};
+  padding: 5px;
   font-size: 24px;
+  border-radius: 10px;
 `;
 
 const StyledInput = styled.input`
   border: none;
-  border-bottom: 1px solid #171212;
+  border-bottom: 1px solid ${black};
   background-color: transparent;
 
   font-size: 24px;
@@ -376,14 +386,14 @@ const List = memo(
 const Item = ({ item, onRemoveItem }: ItemProps) => (
   <StyledItem>
     <StyledColumn width="10%">{item.category}</StyledColumn>
-    <StyledColumn width="30%">{item.author_name}</StyledColumn>
-    <StyledColumn width="50%">{item.text}</StyledColumn>
+    <StyledColumn width="40%">{item.author_name}</StyledColumn>
+    <StyledColumn width="40%">{item.text}</StyledColumn>
     <StyledColumn width="10%">
       <StyledButtonSmall
         type="button"
         onClick={() => onRemoveItem(item)}
       >
-        <Check height="18px" width="18px" />
+        <CheckIcon width="18px" height="18px" />
       </StyledButtonSmall>
     </StyledColumn>
   </StyledItem>
