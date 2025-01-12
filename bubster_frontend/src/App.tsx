@@ -102,7 +102,7 @@ const StyledContainer = styled.div`
 
   background: ${limegreen};
   background: linear-gradient(to left, ${pastelblue}, ${limegreen});
-  color: #171212;
+  color: ${black};
 `;
 
 const StyledHeadlinePrimary = styled.h1`
@@ -140,13 +140,14 @@ const StyledButton = styled.button`
   cursor: pointer;
   font-size: 24px;
 
-  transition: all 0.2s ease-in;
+  transition: all 0.1s ease-in;
 
   &:hover {
     color: ${black};
+    border: 1px solid ${white};
 
-    svg > g {
-      fill: ${black};
+    &:hover svg > g {
+      fill: ${white};
       stroke: ${white};
     }
   }
