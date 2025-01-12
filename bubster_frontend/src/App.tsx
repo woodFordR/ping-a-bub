@@ -11,6 +11,7 @@ import {
   useState
 } from 'react';
 import CheckIcon from './assets/check.svg?react';
+import { FaBeer, FaCode } from "react-icons/fa";
 
 import axios from 'axios';
 import styled from 'styled-components';
@@ -385,8 +386,12 @@ const List = memo(
 
 const Item = ({ item, onRemoveItem }: ItemProps) => (
   <StyledItem>
-    <StyledColumn width="10%">{item.category}</StyledColumn>
-    <StyledColumn width="40%">{item.author_name}</StyledColumn>
+    <StyledColumn width="10%">
+      <FaCode />&nbsp;{item.category}
+    </StyledColumn>
+    <StyledColumn width="40%">
+      <FaBeer />&nbsp;{item.author_name}
+    </StyledColumn>
     <StyledColumn width="40%">{item.text}</StyledColumn>
     <StyledColumn width="10%">
       <StyledButtonSmall
