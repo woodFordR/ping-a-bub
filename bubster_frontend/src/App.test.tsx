@@ -1,4 +1,10 @@
 import { describe, it, expect } from 'vitest';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+} from '@testing-library/react';
 import App, {
   quotesReducer,
   Item,
@@ -12,7 +18,7 @@ const quoteOne = {
   author_name: 'dada',
   text: 'the doggy is scared of the ice.',
   num_likes: '4',
-  id: 1,
+  id: '1',
 };
 
 const quoteTwo = {
@@ -20,7 +26,7 @@ const quoteTwo = {
   author_name: 'squish',
   text: 'quack! quack! quack!',
   num_likes: '32',
-  id: 2,
+  id: '2',
 };
 
 const quoteThree = {
@@ -28,7 +34,7 @@ const quoteThree = {
   author_name: 'woody',
   text: 'woof! woof! woof!',
   num_likes: '51',
-  id: 3,
+  id: '3',
 };
 
 const quotes = [quoteOne, quoteTwo, quoteThree]
@@ -56,13 +62,9 @@ describe('quotesReducer', () => {
   });
 });
 
-describe('something truthy or falsey', () => {
-  it('true to be true', () => {
-    expect(true).toBe(true);
-  });
-
-  it('false to be false', () => {
-    expect(false).toBe(false);
+describe('Item', () => {
+  it('renders all properties', () => {
+    render(<Item item={quoteTwo} />);
   });
 });
 

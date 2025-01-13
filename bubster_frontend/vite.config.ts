@@ -10,6 +10,10 @@ export default defineConfig({
       include: "**/*.svg?react",
     }),
   ],
+  test: {
+    environment: 'jsdom',
+    setupFiles: './tests/setup.ts',
+  },
   server: {
     host: true,
     strictPort: true,
