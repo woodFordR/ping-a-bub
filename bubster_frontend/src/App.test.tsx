@@ -12,7 +12,7 @@ const quoteOne = {
   author_name: 'dada',
   text: 'the doggy is scared of the ice.',
   num_likes: '4',
-  objectID: 1,
+  id: 1,
 };
 
 const quoteTwo = {
@@ -20,7 +20,7 @@ const quoteTwo = {
   author_name: 'squish',
   text: 'quack! quack! quack!',
   num_likes: '32',
-  objectID: 2,
+  id: 2,
 };
 
 const quoteThree = {
@@ -28,14 +28,31 @@ const quoteThree = {
   author_name: 'woody',
   text: 'woof! woof! woof!',
   num_likes: '51',
-  objectID: 3,
+  id: 3,
 };
 
 const quotes = [quoteOne, quoteTwo, quoteThree]
 
 describe('quotesReducer', () => {
   it('removes a quote from all quotes', () => {
-    expect(true).toBe(true);
+    const action = {
+      type: 'REMOVE_QUOTE',
+      payload: quoteOne,
+    };
+    const state = {
+      data: quotes,
+      isLoading: false,
+      isError: false,
+    };
+
+    const newState = quotesReducer(state, action);
+    const expectedState = {
+      data: [quoteTwo, quoteThree],
+      isLoading: false,
+      isError: false,
+    };
+
+    expect(newState).toStrictEqual(expectedState);
   });
 });
 
