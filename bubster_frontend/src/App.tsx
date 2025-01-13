@@ -429,3 +429,5 @@ const SearchForm = ({
 
 export default App;
 
+export { quotesReducer, Item, List, SearchForm, InputWithLabel };
+
