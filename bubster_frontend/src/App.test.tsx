@@ -20,7 +20,7 @@ vi.mock('axios');
 const quoteOne = {
   category: 'other',
   author_name: 'dada',
-  text: 'the doggy is scared of the ice.',
+  text: 'the doggy is scared of the ice!',
   num_likes: '4',
   id: '1',
 };
@@ -160,7 +160,7 @@ describe('App', () => {
     }
   });
 
-  it('removes a story', async () => {
+  it('removes a quote', async () => {
     const promise = Promise.resolve({
       data: quotes,
     });
@@ -176,6 +176,59 @@ describe('App', () => {
     fireEvent.click(screen.getAllByRole('button')[1]);
     expect(screen.getAllByRole('button').length).toBe(3);
     expect(screen.queryByText(/dog/)).toBeNull();
+  });
+
+  it('searches for specific quotes', async () => {
+    const exclaimPromise = Promise.resolve({
+      data: quotes,
+    });
+    const quoteFour = {
+      category: 'happy',
+      author_name: 'mama',
+      text: 'the wheels on the bus go round.',
+      num_likes: '101',
+      id: '4',
+    };
+    const jsPromise = Promise.resolve({
+      data: [quoteFour],
+    });
+
+    axios.get.mockImplementation((text) => {
+      if (text.includes('wheels')) {
+        return jsPromise;
+      }
+      if (text.includes('is')) {
+        return exclaimPromise;
+      }
+
+      throw Error;
+    });
+
+    // init render
+    render(<App />);
+
+    // data fetch
+    await waitFor(async () => await exclaimPromise);
+    screen.debug();
+    expect(screen.queryByDisplayValue('is')).toBeInTheDocument();
+    expect(screen.queryByDisplayValue('wheels')).toBeNull();
+    expect(screen.queryByText('other')).toBeInTheDocument();
+    expect(screen.queryByText('happy')).toBeNull();
+
+    // user interacts
+    fireEvent.change(screen.queryByDisplayValue('is'), {
+      target: {
+        value: 'wheels',
+      },
+    });
+    expect(screen.queryByDisplayValue('is')).toBeNull();
+    expect(screen.queryByDisplayValue('wheels')).toBeInTheDocument();
+    fireEvent.submit(screen.queryByText('submit'));
+
+    // second data fetch
+    await waitFor(async () => await jsPromise);
+    expect(screen.queryByText('other')).toBeNull();
+    expect(screen.queryByText('happy')).toBeInTheDocument();
   });
 });
 
