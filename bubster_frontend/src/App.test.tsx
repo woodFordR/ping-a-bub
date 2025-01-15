@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { describe, it, expect, vi } from 'vitest';
 import {
   render,
@@ -12,6 +13,9 @@ import App, {
   SearchForm,
   InputWithLabel,
 } from './App';
+
+
+vi.mock('axios');
 
 const quoteOne = {
   category: 'other',
@@ -119,6 +123,59 @@ describe('SearchForm', () => {
     fireEvent.submit(screen.getByRole('button'));
 
     expect(searchFormProps.onSearchSubmit).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('App', () => {
+  it('succeeds fetching data', async () => {
+    const promise = Promise.resolve({
+      data: quotes,
+    });
+
+    axios.get.mockImplementationOnce(() => promise);
+
+    render(<App />);
+
+    expect(screen.queryByText(/Loading/)).toBeInTheDocument();
+
+    await waitFor(async () => promise);
+
+    expect(screen.queryByText(/Loading/)).toBeNull();
+    expect(screen.getByText(/quack/)).toBeInTheDocument();
+    expect(screen.getByText('other')).toBeInTheDocument();
+    expect(screen.getAllByText('funny').length).toBe(2);
+  });
+
+  it('fails fetching data', async () => {
+    const promise = Promise.reject();
+    axios.get.mockImplementationOnce(() => promise);
+    render(<App />);
+    expect(screen.queryByText(/Loading/)).toBeInTheDocument();
+
+    try {
+      await waitFor(async () => await promise);
+    } catch (error) {
+      expect(screen.queryByText(/Loading/)).toBeNull();
+      expect(screen.queryByText(/went wrong/)).toBeInTheDocument();
+    }
+  });
+
+  it('removes a story', async () => {
+    const promise = Promise.resolve({
+      data: quotes,
+    });
+
+    axios.get.mockImplementationOnce(() => promise);
+
+    render(<App />);
+    await waitFor(async () => promise);
+
+    expect(screen.getAllByRole('button').length).toBe(4);
+    expect(screen.getByText(/dog/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getAllByRole('button')[1]);
+    expect(screen.getAllByRole('button').length).toBe(3);
+    expect(screen.queryByText(/dog/)).toBeNull();
   });
 });
 

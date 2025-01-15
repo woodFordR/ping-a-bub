@@ -25,8 +25,8 @@ const welcome = {
   title: "bubster<<>>dashboard"
 };
 
-// defining theme colors
-const limegreen = "#7EBD01";
+// defining theme colors #7EBD01
+const lavender = "#745E96";
 const pastelblue = "#B3EBF2";
 const black = "#171212";
 const white = "#ffffff";
@@ -101,8 +101,8 @@ const StyledContainer = styled.div`
   height: 100vw;
   padding: 20px;
 
-  background: ${limegreen};
-  background: linear-gradient(to left, ${pastelblue}, ${limegreen});
+  background: ${lavender};
+  background: linear-gradient(to left, ${pastelblue}, ${lavender});
   color: ${black};
 `;
 
