@@ -124,6 +124,12 @@ describe('SearchForm', () => {
 
     expect(searchFormProps.onSearchSubmit).toHaveBeenCalledTimes(1);
   });
+
+  it('renders snapshot', () => {
+    const { container } = render(<SearchForm {...searchFormProps} />);
+    expect(container.firstChild).toMatchSnapshot();
+
+  })
 });
 
 describe('App', () => {
@@ -174,6 +180,7 @@ describe('App', () => {
     expect(screen.getByText(/dog/)).toBeInTheDocument();
 
     fireEvent.click(screen.getAllByRole('button')[1]);
+
     expect(screen.getAllByRole('button').length).toBe(3);
     expect(screen.queryByText(/dog/)).toBeNull();
   });
@@ -209,7 +216,7 @@ describe('App', () => {
 
     // data fetch
     await waitFor(async () => await exclaimPromise);
-    screen.debug();
+
     expect(screen.queryByDisplayValue('is')).toBeInTheDocument();
     expect(screen.queryByDisplayValue('wheels')).toBeNull();
     expect(screen.queryByText('other')).toBeInTheDocument();
@@ -221,12 +228,15 @@ describe('App', () => {
         value: 'wheels',
       },
     });
+
     expect(screen.queryByDisplayValue('is')).toBeNull();
     expect(screen.queryByDisplayValue('wheels')).toBeInTheDocument();
+
     fireEvent.submit(screen.queryByText('submit'));
 
     // second data fetch
     await waitFor(async () => await jsPromise);
+
     expect(screen.queryByText('other')).toBeNull();
     expect(screen.queryByText('happy')).toBeInTheDocument();
   });
