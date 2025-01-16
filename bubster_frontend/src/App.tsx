@@ -1,8 +1,6 @@
 import {
   ChangeEvent,
-  memo,
   FormEvent,
-  ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -10,12 +8,12 @@ import {
   useRef,
   useState
 } from 'react';
-import CheckIcon from './assets/check.svg?react';
-import { FaBeer, FaCode } from "react-icons/fa";
 
 import axios from 'axios';
 import styled from 'styled-components';
 import './App.css'
+import { List } from './List';
+import { InputWithLabel } from './InputWithLabel';
 
 
 // welcome gear
@@ -39,16 +37,6 @@ type Quote = {
   text: string;
   num_likes: number;
 };
-
-type ItemProps = {
-  item: Quote;
-  onRemoveItem: (item: Quote) => void;
-};
-
-type ListProps = {
-  list: QuotesState;
-  onRemoveItem: (item: Quote) => void;
-}
 
 type QuotesState = {
   data: Quote[];
@@ -86,16 +74,6 @@ type SearchFormProps = {
   onSearchSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }
 
-type InputWithLabelProps = {
-  id: string;
-  value: string;
-  type?: string;
-  onInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  isFocused?: boolean;
-  children: ReactNode;
-}
-
-
 // styled components
 const StyledContainer = styled.div`
   height: 100vw;
@@ -112,26 +90,6 @@ const StyledHeadlinePrimary = styled.h1`
 
 const StyledHeadlineSecondary = styled.h2`
   font-size: 24px;
-`;
-
-const StyledItem = styled.li`
-  display: flex;
-  align-items: center;
-  padding-bottom: 5px;
-`;
-
-const StyledColumn = styled.span<{ width?: string; }>`
-  padding: 0 5px;
-  white-space: nowrap;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-
-  a {
-    color: inherit;
-  }
-
-  width: ${(props) => props.width};
 `;
 
 const StyledButton = styled.button`
@@ -154,10 +112,6 @@ const StyledButton = styled.button`
   }
 `;
 
-const StyledButtonSmall = styled(StyledButton)`
-  padding: 5px;
-`;
-
 const StyledButtonLarge = styled(StyledButton)`
   padding: 10px;
 `;
@@ -167,21 +121,6 @@ const StyledSearchForm = styled.form`
   display: flex;
   align-items: baseline;
   justify-content: center;
-`;
-
-const StyledLabel = styled.label`
-  border: 1px solid ${black};
-  padding: 5px;
-  font-size: 24px;
-  border-radius: 10px;
-`;
-
-const StyledInput = styled.input`
-  border: none;
-  border-bottom: 1px solid ${black};
-  background-color: transparent;
-
-  font-size: 24px;
 `;
 
 
@@ -336,73 +275,6 @@ const App = () => {
   );
 };
 
-const InputWithLabel = ({
-  id,
-  value,
-  type = 'text',
-  onInputChange,
-  isFocused,
-  children,
-}: InputWithLabelProps) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (isFocused && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isFocused]);
-
-  return (
-    <>
-      <StyledLabel htmlFor={id}>{children}</StyledLabel>
-      &nbsp;&lt;&lt;&nbsp;
-      <StyledInput
-        ref={inputRef}
-        id={id}
-        type={type}
-        value={value}
-        onChange={onInputChange}
-        className="input"
-      />
-      &nbsp;&gt;&gt;&nbsp;
-    </>
-  );
-};
-
-const List = memo(
-  ({ list, onRemoveItem }: ListProps) =>
-  (
-    <ul>
-      {list.data.map((item) => (
-        <Item
-          key={item.id}
-          item={item}
-          onRemoveItem={onRemoveItem}
-        />
-      ))}
-    </ul>
-  )
-);
-
-const Item = ({ item, onRemoveItem }: ItemProps) => (
-  <StyledItem>
-    <StyledColumn width="10%">
-      <FaCode />&nbsp;{item.category}
-    </StyledColumn>
-    <StyledColumn width="40%">
-      <FaBeer />&nbsp;{item.author_name}
-    </StyledColumn>
-    <StyledColumn width="40%">{item.text}</StyledColumn>
-    <StyledColumn width="10%">
-      <StyledButtonSmall
-        type="button"
-        onClick={() => onRemoveItem(item)}
-      >
-        <CheckIcon width="18px" height="18px" />
-      </StyledButtonSmall>
-    </StyledColumn>
-  </StyledItem>
-);
 
 const SearchForm = ({
   searchTerm,
@@ -429,5 +301,5 @@ const SearchForm = ({
 
 export default App;
 
-export { quotesReducer, Item, List, SearchForm, InputWithLabel };
+export { quotesReducer, SearchForm };
 
