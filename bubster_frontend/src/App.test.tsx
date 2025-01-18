@@ -8,10 +8,6 @@ import {
 } from '@testing-library/react';
 import App, {
   quotesReducer,
-  Item,
-  List,
-  SearchForm,
-  InputWithLabel,
 } from './App';
 
 
@@ -66,71 +62,6 @@ describe('quotesReducer', () => {
   });
 });
 
-describe('Item', () => {
-  it('renders all properties', () => {
-    render(<Item item={quoteTwo} />);
-  });
-
-  it('renders a clickable dismiss button', () => {
-    render(<Item item={quoteOne} />);
-
-    screen.getByRole('button');
-    // expect(screen.getByRole('button')).toBeInTheDocument();
-  });
-
-  it('clicking the button calls the callback handler', () => {
-    const handleRemoveItem = vi.fn();
-
-    render(<Item item={quoteThree} onRemoveItem={handleRemoveItem} />);
-    fireEvent.click(screen.getByRole('button'));
-
-    expect(handleRemoveItem).toHaveBeenCalledTimes(1);
-  });
-});
-
-describe('SearchForm', () => {
-  const searchFormProps = {
-    searchTerm: 'o',
-    onSearchInput: vi.fn(),
-    onSearchSubmit: vi.fn(),
-  };
-
-  it('renders the input field with its value', () => {
-    render(<SearchForm {...searchFormProps} />);
-
-    expect(screen.getByDisplayValue('o')).toBeInTheDocument();
-  });
-
-  it('renders the correct label', () => {
-    render(<SearchForm {...searchFormProps} />);
-
-    expect(screen.getByLabelText(/search/)).toBeInTheDocument();
-  });
-
-  it('calls onSearchInput on input field change', () => {
-    render(<SearchForm {...searchFormProps} />);
-
-    fireEvent.change(screen.getByDisplayValue('o'), {
-      target: { value: 'a' },
-    });
-
-    expect(searchFormProps.onSearchInput).toHaveBeenCalledTimes(1);
-  });
-
-  it('calls onSearchSubmit on button submit click', () => {
-    render(<SearchForm {...searchFormProps} />);
-
-    fireEvent.submit(screen.getByRole('button'));
-
-    expect(searchFormProps.onSearchSubmit).toHaveBeenCalledTimes(1);
-  });
-
-  it('renders snapshot', () => {
-    const { container } = render(<SearchForm {...searchFormProps} />);
-    expect(container.firstChild).toMatchSnapshot();
-
-  })
-});
 
 describe('App', () => {
   it('succeeds fetching data', async () => {

@@ -1,27 +1,8 @@
 import styled from 'styled-components';
 
+
 const black = "#171212";
 const white = "#ffffff";
-
-export const StyledItem = styled.li`
-  display: flex;
-  align-items: center;
-  padding-bottom: 5px;
-`;
-
-export const StyledColumn = styled.span<{ width?: string; }>`
-  padding: 0 5px;
-  white-space: nowrap;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-
-  a {
-    color: inherit;
-  }
-
-  width: ${(props) => props.width};
-`;
 
 const StyledButton = styled.button`
   background: transparent;
@@ -43,7 +24,13 @@ const StyledButton = styled.button`
   }
 `;
 
-export const StyledButtonSmall = styled(StyledButton)`
-  padding: 5px;
+export const StyledButtonLarge = styled(StyledButton)`
+  padding: 10px;
 `;
 
+export const StyledSearchForm = styled.form`
+  padding: 10px 0 20px 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+`;

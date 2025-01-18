@@ -12,8 +12,8 @@ import {
 import axios from 'axios';
 import styled from 'styled-components';
 import './App.css'
-import { List } from './List';
-import { InputWithLabel } from './InputWithLabel';
+import List from './List';
+import SearchForm from './SearchForm';
 
 
 // welcome gear
@@ -27,7 +27,6 @@ const welcome = {
 const lavender = "#745E96";
 const pastelblue = "#B3EBF2";
 const black = "#171212";
-const white = "#ffffff";
 
 // type definitions
 type Quote = {
@@ -68,12 +67,6 @@ type QuotesAction =
   | QuotesFetchSuccessAction
   | QuotesRemoveAction;
 
-type SearchFormProps = {
-  searchTerm: string;
-  onSearchInput: (event: ChangeEvent<HTMLInputElement>) => void;
-  onSearchSubmit: (event: FormEvent<HTMLFormElement>) => void;
-}
-
 // styled components
 const StyledContainer = styled.div`
   height: 100vw;
@@ -90,37 +83,6 @@ const StyledHeadlinePrimary = styled.h1`
 
 const StyledHeadlineSecondary = styled.h2`
   font-size: 24px;
-`;
-
-const StyledButton = styled.button`
-  background: transparent;
-  border: 1px solid ${black};
-  padding: 5px;
-  cursor: pointer;
-  font-size: 24px;
-
-  transition: all 0.1s ease-in;
-
-  &:hover {
-    color: ${black};
-    border: 1px solid ${white};
-
-    &:hover svg > g {
-      fill: ${white};
-      stroke: ${white};
-    }
-  }
-`;
-
-const StyledButtonLarge = styled(StyledButton)`
-  padding: 10px;
-`;
-
-const StyledSearchForm = styled.form`
-  padding: 10px 0 20px 0;
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
 `;
 
 
@@ -182,8 +144,6 @@ const quotesReducer = (
 };
 
 const getSumLikes = (quotes: QuotesState) => {
-  console.log('C');
-
   return quotes.data.reduce(
     (result, value) => result + (value.num_likes || 0),
     0
@@ -276,30 +236,7 @@ const App = () => {
 };
 
 
-const SearchForm = ({
-  searchTerm,
-  onSearchInput,
-  onSearchSubmit
-}: SearchFormProps) => (
-  <StyledSearchForm onSubmit={onSearchSubmit}>
-    <InputWithLabel
-      id="search"
-      value={searchTerm}
-      isFocused
-      onInputChange={onSearchInput}
-    >
-      &nbsp;<strong>search</strong>&nbsp;
-    </InputWithLabel>
-    <StyledButtonLarge
-      type="submit"
-      disabled={!searchTerm}
-    >
-      submit
-    </StyledButtonLarge>
-  </StyledSearchForm>
-);
-
 export default App;
 
-export { quotesReducer, SearchForm };
+export { quotesReducer };
 

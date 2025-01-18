@@ -71,5 +71,7 @@ const Item = ({ item, onRemoveItem }: ItemProps) => (
   </StyledItem>
 );
 
-export { List };
+export default List;
+
+export { Item };
 
