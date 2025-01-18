@@ -2,6 +2,11 @@ import styled from 'styled-components';
 
 const black = "#171212";
 const white = "#ffffff";
+const lavender = "#745E96";
+
+export const StyledBar = styled.hr`
+  border-color: ${lavender};
+`
 
 export const StyledItem = styled.li`
   display: flex;
