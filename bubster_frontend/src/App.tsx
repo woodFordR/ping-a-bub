@@ -148,7 +148,31 @@ const getSumLikes = (quotes: QuotesState) => {
     (result, value) => result + (value.num_likes || 0),
     0
   );
-}
+};
+
+const extractSearchTerm = (url: string) => url.replace(API_ENDPOINT, '');
+
+const getLastSearches = (urls: string[]) =>
+  urls
+    .reduce((result: Array<string>, url, index) => {
+      const searchTerm = extractSearchTerm(url);
+
+      if (index === 0) {
+        return result.concat(searchTerm);
+      }
+
+      const previousSearchTerm = result[result.length - 1];
+
+      if (searchTerm === previousSearchTerm) {
+        return result;
+      } else {
+        return result.concat(searchTerm);
+      }
+    }, [])
+    .slice(-6)
+    .slice(0, -1)
+
+const getUrl = (searchTerm: string) => `${API_ENDPOINT}${searchTerm}`;
 
 
 const App = () => {
@@ -156,9 +180,9 @@ const App = () => {
     'search',
     'is'
   );
-  const [url, setUrl] = useState(
-    `${API_ENDPOINT}${searchTerm}`
-  );
+  const [urls, setUrls] = useState([
+    getUrl(searchTerm)
+  ]);
   const [quotes, dispatchQuotes] = useReducer(
     quotesReducer,
     { data: [], isLoading: false, isError: false },
@@ -168,7 +192,8 @@ const App = () => {
     dispatchQuotes({ type: 'QUOTES_FETCH_INIT' });
 
     try {
-      const response = await axios.get(url)
+      const lastUrl = urls[urls.length - 1];
+      const response = await axios.get(lastUrl)
 
       dispatchQuotes({
         type: 'QUOTES_FETCH_SUCCESS',
@@ -177,7 +202,7 @@ const App = () => {
     } catch {
       dispatchQuotes({ type: 'QUOTES_FETCH_FAILURE' });
     }
-  }, [url]);
+  }, [urls]);
 
   useEffect(() => {
     handleFetchQuotes();
@@ -190,6 +215,11 @@ const App = () => {
     });
   }, []);
 
+  const handleSearch = (searchTerm: string) => {
+    const url = getUrl(searchTerm);
+    setUrls(urls.concat(url));
+  }
+
   const handleSearchInput = (
     event: ChangeEvent<HTMLInputElement>
   ) => {
@@ -199,7 +229,7 @@ const App = () => {
   const handleSearchSubmit = (
     event: FormEvent<HTMLFormElement>
   ) => {
-    setUrl(`${API_ENDPOINT}${searchTerm}`);
+    handleSearch(searchTerm);
 
     event.preventDefault();
   };
@@ -208,6 +238,14 @@ const App = () => {
     () => getSumLikes(quotes),
     [quotes]
   );
+
+  const handleLastSearch = (searchTerm: string) => {
+    setSearchTerm(searchTerm);
+    handleSearch(searchTerm);
+  };
+
+
+  const lastSearches = getLastSearches(urls);
 
   return (
     <StyledContainer>
@@ -219,6 +257,16 @@ const App = () => {
         onSearchInput={handleSearchInput}
         onSearchSubmit={handleSearchSubmit}
       />
+
+      {lastSearches.map((searchTerm, index) => (
+        <button
+          key={searchTerm + index}
+          type="button"
+          onClick={() => handleLastSearch(searchTerm)}
+        >
+          {searchTerm}
+        </button>
+      ))}
 
       {quotes.isError && <p>Something went wrong ...</p>}
 
