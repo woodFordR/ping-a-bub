@@ -10,6 +10,7 @@ import {
   StyledColumn,
   StyledButtonSmall,
 } from './style';
+import { sortBy } from 'lodash';
 
 
 // type definitions
@@ -21,7 +22,7 @@ type Quote = {
   num_likes: number;
 };
 
-type QuotesState = {
+type QuoteState = {
   data: Quote[];
   isLoading: boolean;
   isError: boolean;
@@ -33,33 +34,47 @@ type ItemProps = {
 };
 
 type ListProps = {
-  list: QuotesState;
+  list: QuoteState;
   onRemoveItem: (item: Quote) => void;
+};
+
+type SortedListObject = {
+  [key: string]: (list: Quote[]) => Quote[];
+};
+
+const SORTS: SortedListObject = {
+  NONE: (list) => list,
+  CATEGORY: (list) => sortBy(list, 'category'),
+  AUTHOR: (list) => sortBy(list, 'author'),
 };
 
 
 const List = memo(
   ({ list, onRemoveItem }: ListProps) => {
-    const [sort, setSort] = useState('None');
-    const handleSort = (sortKey) => {
+    const [sort, setSort] = useState('NONE');
+    const handleSort = (sortKey: string) => {
       setSort(sortKey);
-    }
+    };
+
+    const sortFunction = SORTS[sort];
+    const sortedList = sortFunction(list.data);
+
     return (
       <ul>
         <StyledItem>
           <StyledColumn width="20%">
-            <StyledButtonSmall type="button" onClick={() => handleSort('category')} >
+            <StyledButtonSmall type="button" onClick={() => handleSort('CATEGORY')} >
               <FaCode />&nbsp;category
             </StyledButtonSmall>
           </StyledColumn>
           <StyledColumn width="30%">
-            <StyledButtonSmall type="button" onClick={() => handleSort('author')} >
+            <StyledButtonSmall type="button" onClick={() => handleSort('AUTHOR')} >
               <FaBeer />&nbsp;author
             </StyledButtonSmall>
           </StyledColumn>
           <StyledColumn width="30%">
-            <StyledButtonSmall type="button" onClick={() => handleSort('quote')} >
-              <FaCode />&nbsp;quote
+            <StyledButtonSmall type="button" onClick={() => handleSort('QUOTE')} >
+              <FaCode />&nbsp;quotes
             </StyledButtonSmall>
           </StyledColumn>
           <StyledColumn width="20%">
@@ -68,7 +83,7 @@ const List = memo(
         </StyledItem>
         <StyledBar />
         {
-          list.data.map((item) => (
+          sortedList.map((item: Quote) => (
             <Item
               key={item.id}
               item={item}
