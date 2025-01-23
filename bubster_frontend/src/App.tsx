@@ -1,8 +1,6 @@
 import {
   ChangeEvent,
-  memo,
   FormEvent,
-  ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -10,11 +8,12 @@ import {
   useRef,
   useState
 } from 'react';
-import CheckIcon from './assets/check.svg?react';
 
 import axios from 'axios';
 import styled from 'styled-components';
 import './App.css'
+import List from './List';
+import SearchForm from './SearchForm';
 
 
 // welcome gear
@@ -24,11 +23,10 @@ const welcome = {
   title: "bubster<<>>dashboard"
 };
 
-// defining theme colors
-const limegreen = "#7EBD01";
+// defining theme colors #7EBD01
+const lavender = "#745E96";
 const pastelblue = "#B3EBF2";
 const black = "#171212";
-const white = "#ffffff";
 
 // type definitions
 type Quote = {
@@ -38,16 +36,6 @@ type Quote = {
   text: string;
   num_likes: number;
 };
-
-type ItemProps = {
-  item: Quote;
-  onRemoveItem: (item: Quote) => void;
-};
-
-type ListProps = {
-  list: QuotesState;
-  onRemoveItem: (item: Quote) => void;
-}
 
 type QuotesState = {
   data: Quote[];
@@ -79,29 +67,13 @@ type QuotesAction =
   | QuotesFetchSuccessAction
   | QuotesRemoveAction;
 
-type SearchFormProps = {
-  searchTerm: string;
-  onSearchInput: (event: ChangeEvent<HTMLInputElement>) => void;
-  onSearchSubmit: (event: FormEvent<HTMLFormElement>) => void;
-}
-
-type InputWithLabelProps = {
-  id: string;
-  value: string;
-  type?: string;
-  onInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  isFocused?: boolean;
-  children: ReactNode;
-}
-
-
 // styled components
 const StyledContainer = styled.div`
   height: 100vw;
   padding: 20px;
 
-  background: ${limegreen};
-  background: linear-gradient(to left, ${pastelblue}, ${limegreen});
+  background: ${lavender};
+  background: linear-gradient(to left, ${pastelblue}, ${lavender});
   color: ${black};
 `;
 
@@ -110,76 +82,6 @@ const StyledHeadlinePrimary = styled.h1`
 `;
 
 const StyledHeadlineSecondary = styled.h2`
-  font-size: 24px;
-`;
-
-const StyledItem = styled.li`
-  display: flex;
-  align-items: center;
-  padding-bottom: 5px;
-`;
-
-const StyledColumn = styled.span<{ width?: string; }>`
-  padding: 0 5px;
-  white-space: nowrap;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-
-  a {
-    color: inherit;
-  }
-
-  width: ${(props) => props.width};
-`;
-
-const StyledButton = styled.button`
-  background: transparent;
-  border: 1px solid ${black};
-  padding: 5px;
-  cursor: pointer;
-  font-size: 24px;
-
-  transition: all 0.1s ease-in;
-
-  &:hover {
-    color: ${black};
-    border: 1px solid ${white};
-
-    &:hover svg > g {
-      fill: ${white};
-      stroke: ${white};
-    }
-  }
-`;
-
-const StyledButtonSmall = styled(StyledButton)`
-  padding: 5px;
-`;
-
-const StyledButtonLarge = styled(StyledButton)`
-  padding: 10px;
-`;
-
-const StyledSearchForm = styled.form`
-  padding: 10px 0 20px 0;
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-`;
-
-const StyledLabel = styled.label`
-  border: 1px solid ${black};
-  padding: 5px;
-  font-size: 24px;
-  border-radius: 10px;
-`;
-
-const StyledInput = styled.input`
-  border: none;
-  border-bottom: 1px solid ${black};
-  background-color: transparent;
-
   font-size: 24px;
 `;
 
@@ -242,13 +144,35 @@ const quotesReducer = (
 };
 
 const getSumLikes = (quotes: QuotesState) => {
-  console.log('C');
-
   return quotes.data.reduce(
     (result, value) => result + (value.num_likes || 0),
     0
   );
-}
+};
+
+const extractSearchTerm = (url: string) => url.replace(API_ENDPOINT, '');
+
+const getLastSearches = (urls: string[]) =>
+  urls
+    .reduce((result: Array<string>, url, index) => {
+      const searchTerm = extractSearchTerm(url);
+
+      if (index === 0) {
+        return result.concat(searchTerm);
+      }
+
+      const previousSearchTerm = result[result.length - 1];
+
+      if (searchTerm === previousSearchTerm) {
+        return result;
+      } else {
+        return result.concat(searchTerm);
+      }
+    }, [])
+    .slice(-6)
+    .slice(0, -1)
+
+const getUrl = (searchTerm: string) => `${API_ENDPOINT}${searchTerm}`;
 
 
 const App = () => {
@@ -256,9 +180,9 @@ const App = () => {
     'search',
     'is'
   );
-  const [url, setUrl] = useState(
-    `${API_ENDPOINT}${searchTerm}`
-  );
+  const [urls, setUrls] = useState([
+    getUrl(searchTerm)
+  ]);
   const [quotes, dispatchQuotes] = useReducer(
     quotesReducer,
     { data: [], isLoading: false, isError: false },
@@ -268,7 +192,8 @@ const App = () => {
     dispatchQuotes({ type: 'QUOTES_FETCH_INIT' });
 
     try {
-      const response = await axios.get(url)
+      const lastUrl = urls[urls.length - 1];
+      const response = await axios.get(lastUrl)
 
       dispatchQuotes({
         type: 'QUOTES_FETCH_SUCCESS',
@@ -277,7 +202,7 @@ const App = () => {
     } catch {
       dispatchQuotes({ type: 'QUOTES_FETCH_FAILURE' });
     }
-  }, [url]);
+  }, [urls]);
 
   useEffect(() => {
     handleFetchQuotes();
@@ -290,6 +215,11 @@ const App = () => {
     });
   }, []);
 
+  const handleSearch = (searchTerm: string) => {
+    const url = getUrl(searchTerm);
+    setUrls(urls.concat(url));
+  }
+
   const handleSearchInput = (
     event: ChangeEvent<HTMLInputElement>
   ) => {
@@ -299,7 +229,7 @@ const App = () => {
   const handleSearchSubmit = (
     event: FormEvent<HTMLFormElement>
   ) => {
-    setUrl(`${API_ENDPOINT}${searchTerm}`);
+    handleSearch(searchTerm);
 
     event.preventDefault();
   };
@@ -308,6 +238,14 @@ const App = () => {
     () => getSumLikes(quotes),
     [quotes]
   );
+
+  const handleLastSearch = (searchTerm: string) => {
+    setSearchTerm(searchTerm);
+    handleSearch(searchTerm);
+  };
+
+
+  const lastSearches = getLastSearches(urls);
 
   return (
     <StyledContainer>
@@ -319,6 +257,16 @@ const App = () => {
         onSearchInput={handleSearchInput}
         onSearchSubmit={handleSearchSubmit}
       />
+
+      {lastSearches.map((searchTerm, index) => (
+        <button
+          key={searchTerm + index}
+          type="button"
+          onClick={() => handleLastSearch(searchTerm)}
+        >
+          {searchTerm}
+        </button>
+      ))}
 
       {quotes.isError && <p>Something went wrong ...</p>}
 
@@ -335,92 +283,8 @@ const App = () => {
   );
 };
 
-const InputWithLabel = ({
-  id,
-  value,
-  type = 'text',
-  onInputChange,
-  isFocused,
-  children,
-}: InputWithLabelProps) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (isFocused && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isFocused]);
-
-  return (
-    <>
-      <StyledLabel htmlFor={id}>{children}</StyledLabel>
-      &nbsp;&lt;&lt;&nbsp;
-      <StyledInput
-        ref={inputRef}
-        id={id}
-        type={type}
-        value={value}
-        onChange={onInputChange}
-        className="input"
-      />
-      &nbsp;&gt;&gt;&nbsp;
-    </>
-  );
-};
-
-const List = memo(
-  ({ list, onRemoveItem }: ListProps) =>
-  (
-    <ul>
-      {list.data.map((item) => (
-        <Item
-          key={item.id}
-          item={item}
-          onRemoveItem={onRemoveItem}
-        />
-      ))}
-    </ul>
-  )
-);
-
-const Item = ({ item, onRemoveItem }: ItemProps) => (
-  <StyledItem>
-    <StyledColumn width="10%">{item.category}</StyledColumn>
-    <StyledColumn width="40%">{item.author_name}</StyledColumn>
-    <StyledColumn width="40%">{item.text}</StyledColumn>
-    <StyledColumn width="10%">
-      <StyledButtonSmall
-        type="button"
-        onClick={() => onRemoveItem(item)}
-      >
-        <CheckIcon width="18px" height="18px" />
-      </StyledButtonSmall>
-    </StyledColumn>
-  </StyledItem>
-);
-
-const SearchForm = ({
-  searchTerm,
-  onSearchInput,
-  onSearchSubmit
-}: SearchFormProps) => (
-  <StyledSearchForm onSubmit={onSearchSubmit}>
-    <InputWithLabel
-      id="search"
-      value={searchTerm}
-      isFocused
-      onInputChange={onSearchInput}
-    >
-      &nbsp;<strong>search</strong>&nbsp;
-    </InputWithLabel>
-    <StyledButtonLarge
-      type="submit"
-      disabled={!searchTerm}
-    >
-      submit
-    </StyledButtonLarge>
-  </StyledSearchForm>
-);
 
 export default App;
+
+export { quotesReducer };
 

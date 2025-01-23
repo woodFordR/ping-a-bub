@@ -164,3 +164,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# snapshots
+**/__snapshots__
